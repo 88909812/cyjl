@@ -1,0 +1,25 @@
+syntax = "proto3";
+package message;
+
+//0x010001 获取关卡信息
+message RequestGuanKaInfo {
+     uint32 startId = 1;
+     uint32 num = 2;
+}
+
+//0x010002 开始关卡
+message StartGuanKa {
+    uint32 id = 1;
+}
+
+//0x010003
+message SendCyComplete {
+    string identifier = 1; //关卡交互校验标识
+    string cy = 2; //完成关卡的某个成语 服务端接收后加奖励 客户端自己飞奖励
+}
+
+//0x010004 关卡完成 关卡是否完成正确 服务端不进行检测 客户端检测正确即可
+message SendGuanKaComplete {
+    uint32 id = 1;
+    string identifier = 2; //关卡交互校验标识
+}

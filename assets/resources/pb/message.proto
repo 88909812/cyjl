@@ -1,0 +1,34 @@
+syntax = "proto3";
+package message;
+//option  go_package = "gonet/pb/message";//设置go包的可选项
+enum NODE{
+    NONE= 0;
+    GATESERVER= 1;
+    ACCOUNTSERVER=2;
+    WORLDSERVER=3;
+    CORESERVER=4;
+};
+
+message Ipacket{
+    int32  Stx = 1;
+    NODE  DestNodeType = 2;
+    int32  Ckx = 3;
+    uint32  Id = 4;
+}
+
+message RpcHead{
+    uint32  ClientId = 1; //网关连接ID
+    int64  AccountId = 2;
+    int32  fromNode = 3;
+    int32  toNode = 4;
+    int64  CallId = 5;
+    uint32  SocketId = 6;
+}
+
+message RpcPacket{
+    string FuncName = 1;
+    int32 ArgLen = 2;
+    RpcHead RpcHead = 3;
+    bytes RpcBody = 4;
+}
+

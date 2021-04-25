@@ -1,0 +1,47 @@
+syntax = "proto3";
+package message;
+
+//0x000801
+message BackRequestWithDraw {
+    enum RetCode {
+        RC_OK =0;
+        RC_NOT_ENOUGTH = 1; //数量不足
+        RC_NEW_DONE = 2; //新人提现不能重复
+        RC_NUM_ERROR = 3; //金额不对 必须是指定列表中的金额
+        RC_WAY_NOT_SUPPORTED = 4; //提现方式不支持
+        RC_WX_ACCOUNT = 5; //只有微信登录才支持微信提现
+        RC_LOW = 6; //提现要求不符 msg会详细说明(如: 连续签到条件未满足)
+        RC_WXACCOUNT_NOT_OFFICIAL_BINDED = 7; //微信用户请先绑定公众号后提现
+        RC_OTHER = 8;
+    }
+    RetCode code = 1;
+    string msg = 2;		//失败描述 一般为空
+}
+
+//0x000802
+message MoneyDetail
+{
+	message Detail
+	{
+		uint32 time = 1;  // 发生时间
+		sint64 val = 2;  // 变化(单位 分) 正 负
+		int32 withdrawState = 3;  //非提现明细 此值=-1  提现状态 0 等待审核 1 正在处理 2 已提交到第三方 3 提交第三方失败 10 提现成功 100 被取消
+		string title = 4;
+		string content = 5;
+	}
+	int32 pageCount = 1;
+    int32 pageIndex = 2;
+	repeated Detail list = 3;
+}
+
+//0x000803
+message BackExchange {
+    enum RetCode {
+        RC_OK =0;
+        RC_NOT_ENOUGTH = 1; //数量不足        
+        RC_OTHER = 8;
+    }
+    RetCode code = 1;
+    string msg = 2;     //失败描述 一般为空
+    uint32 money = 3; //增加的money 分
+}

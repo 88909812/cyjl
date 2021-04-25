@@ -1,0 +1,8 @@
+{
+  "engine": "cocos2d-html5",
+  "packages": "packages",
+  "version": "2.4.4",
+  "name": "IdiomGame",
+  "id": "3a290b9d-50cd-4c6b-acd5-71dc9f245772",
+  "isNew": false
+}

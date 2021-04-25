@@ -1,0 +1,22 @@
+syntax = "proto3";
+package message;
+
+
+//0x000801 申请提现
+message RequestWithDraw {
+    uint32 val = 1; //提现金额 (单位 分)
+    string way = 2; //提现方式 alipay | wx
+}
+
+//0x000802
+message GetMoneyDetail
+{
+	uint32 pageIndex = 1;  //第几页
+	uint32 pageSize = 2; //每页几条
+}
+
+//0x000803 stone => money
+message ReqExchange
+{
+	uint32 stone = 1;  //要兑换的灵石数量
+}

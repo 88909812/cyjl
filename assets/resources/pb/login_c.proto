@@ -1,0 +1,118 @@
+syntax = "proto3";
+package message;
+//option  go_package = "gonet/pb/login_c";//设置go包的可选项
+
+// 0x000001
+message HeartBeat {
+    int64 time = 1; //毫秒
+}
+
+//0x000100 登录
+message Login {
+    string BuildNo = 1;
+    string Env = 2;  //"mp = 微信平台 test = 测试"
+    bool EnterComplete = 3; //此值为true 则服务端不再等待SendEnterComplete
+	uint32 tick = 4; //时间戳
+	string content = 5; // Env = mp 时 传js_code ; test 时传任意字符串 标识唯一用户
+	string ip = 6;
+    string os = 7; //ios android
+    string device = 8; //机型
+	string group = 9; //域名组
+}
+
+//0x000101 登录成功后通知加载进入完毕
+message SendEnterComplete {
+
+}
+
+//0x000102 发送微信平台用户信息
+message SendMPUserInfo {
+    string name = 1;
+    string avatar = 2;
+    uint32 sex = 3; //1 男 2 女
+}
+
+//0x000103
+message GetRankData
+{
+	uint32 pageIndex = 1;  //第几页
+	uint32 pageSize = 2; //每页几条
+}
+
+//0x000104 获取签到信息
+message ReqSignInfo {
+
+}
+
+//0x000105 普通领取签到奖励
+message GetSign {
+
+}
+
+//0x000106 发送绑定信息 用于绑定账号
+//str格式 = "promoterId:13542"
+//str格式 = "pushToken:13542"  推送唯一token绑定
+message SendBindStr {
+    string str = 1;
+}
+
+//0x000107 剧情(新手引导数据)
+message SendStory {
+    uint32 data = 1;
+}
+
+// 0x000108 获取成语释义
+message GetCyExplain {
+	string cy = 1;
+}
+
+//0x00010A 根据key获取用户数据
+message GetPlayerValueByKey {
+    string key = 1;
+}
+
+
+//0x000110 开始观看视频
+message StartVideo {
+    string key = 1;  //tili 获取体力 tip 填字提示 guanKa 关卡奖励加倍
+    bool banner = 2;  //是否是观看弹窗下部的banner广告
+}
+
+//0x000111 观看视频完毕
+message FinishVideo {
+    int64 id = 1; //
+}
+
+//0x000112 客户端通知服务端广告位展现次数
+message SendVideoShow {
+    uint32 banner = 1; //banner的展现次数
+}
+
+
+//0x000113
+message SendConnect {
+	string str = 1;
+}
+
+//0x000114 VideoBox上普通领取按钮点击
+message GetPutongVideoBox {
+	string key = 1;
+}
+
+//0x0001FE 叫爸爸 在测试服上 直接要求设定属性或数值
+message CallDaddy {
+    //gold 加金币 负数代表减 -0代表清空
+    //diamond 加钻石 负数代表减 -0代表清空
+    //money 加金钱 单位 分 负数代表减 -0代表清空
+    //reset 重置账号 把账号变成刚注册成功的样子
+    //gu 打关卡
+    //reset_video 重置视频播放次数和实验室次数
+    //clear_sign 重置每日签到
+    string name = 1;
+    int64 val = 2;
+}
+
+//0x0001FF
+message ReqLogout {
+
+}

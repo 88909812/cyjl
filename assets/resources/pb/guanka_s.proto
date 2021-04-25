@@ -1,0 +1,48 @@
+syntax = "proto3";
+package message;
+import "message.proto";
+
+message GuanKaInfo {
+    uint32 id = 1;
+    string identifier = 2; //关卡交互校验标识
+    uint32 width = 3;
+    uint32 height = 4;
+    message Charactor {
+        string str = 1;
+        uint32 pos = 2;  //y*row + x
+        bool isBlank = 3; //是否是需要填的位置 如果是显示空白
+    }
+    repeated Charactor list = 5;
+    repeated string cy = 6;
+    repeated string selection = 7; //可选的填选字
+}
+
+//0x010001 发送题库
+message GuanKaInfoList {
+    repeated GuanKaInfo list = 1;
+}
+
+//0x010002
+message BackStartGuanKa {
+     uint32 id = 1;
+     string identifier = 2;
+     uint32 freeTipNum = 3; //免费提示次数 0 则看视频
+     message Cy {
+        string str = 1;
+        uint32 stone = 2;  // 完成此成语获取的灵石奖励
+     }
+     repeated Cy cylist = 4;
+}
+
+//0x010003  显示通关奖励领取
+message BackGuanKaComplete {
+    uint32 videoMultiple = 1;  // 视频几倍 0 则只能普通领取
+    uint32 stone = 2;  // 完成此关获取的灵石奖励
+    uint32 tili = 3;  // 完成此关获取的体力奖励
+    uint32 exp = 4;  // 完成此关获取的修为奖励
+}
+
+//0x01000F  已通关
+message SendReachEnd {
+
+}

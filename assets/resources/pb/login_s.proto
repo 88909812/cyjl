@@ -1,0 +1,215 @@
+syntax = "proto3";
+package message;
+//option  go_package = "gonet/pb/login_s";//设置go包的可选项
+// 0x000001
+message BackHeartBeat {
+	int64 time = 1; //毫秒
+}
+
+//0x000100 登录
+message BackLogin {
+	message LoginSuccess
+	{
+		int64 userId = 1;
+		string name = 2;
+		string avatar = 3;  //长度大于5代表是url自定义头像 否则为数字avatar
+        uint32 bitVal = 4;  //  bitVal&16 == 16 代表该账号已经绑定微信公众号
+		uint32 stone = 5;
+		uint32 tili = 6; //体力
+        uint32 exp = 7; //修为
+		uint32 money = 8; //单位 分
+		uint32 lvl = 9;  //等级 0 - 100  10, 20, ... 100 是大等级 11 为小等级
+
+	}
+	enum RetCode {
+        RC_OK =0;
+        RC_FORBIDDEN_ACCOUNT =1;
+        RC_LOGIN_CLOSED =2;
+        RC_ACCOUNT_NOT_EXIST =3;
+        RC_FORBIDDEN_DEVICE =4;
+        RC_FORBIDDEN_IP =5;
+        RC_INVALID_SESSION =6;
+        RC_VERSION_ERROR =7;
+        RC_PASSWORD_ERROR =8;
+        RC_ILLEGAL_CONTENT =9; //非法字段
+    }
+	RetCode code = 1;		//0成功，其他失败
+	string msg = 2;		//失败原因
+	int64 accountId = 3;
+	bool isRegister = 4;	//是否第一次登录
+	LoginSuccess data = 5;
+	bool isReview = 6; //check是否审核版本，弥补从web端获取状态的错误
+	bool debug = 7; // 是否测试服 可以显示gm命令框
+	uint32 story = 8; // 剧情(新手引导数据)
+	uint32 lastGuanKa = 9; // 上次正在玩的关卡 0代表没有
+	uint32 leftTiliSec = 10; // 剩余多少秒后获得一个体力
+}
+
+// 0x000101
+message BackCyExplain {
+	string pinyin = 1;  //拼音
+	string explain = 2; //释义
+	string source = 3; //出处
+}
+
+
+// 0x000103 服务器主动推送属性改变
+message UserAttr {
+	message attr
+	{
+		string name = 1;  //stone tili money exp lvl
+		uint32 numberVal = 2;
+		string	strVal = 3;
+		bool boolVal = 4;
+	}
+	repeated attr list = 1;
+}
+
+
+//0x000104
+message RankData
+{
+	message Rank
+	{
+	    uint32 rank = 1;
+		int64 userId = 2;
+        string	name = 3;
+		uint32 lvl = 4;
+		string avatar = 5; //长度小于5为系统头像 否则为url
+		uint32 stone = 6;
+        uint32 exp = 7;
+		uint32 guanKa = 8;
+	}
+	int32 pageCount = 1;
+    int32 pageIndex = 2;
+	repeated Rank list = 3;
+	uint32 myRank = 4;
+	uint32 myStone = 5;
+	uint32 myGuanKa = 6;
+}
+
+//0x000105 重置
+message SendLeftTiliSec {
+	uint32 sec = 1;//剩余秒数
+}
+
+
+// 0x000107 签到奖励数据
+message Sign {
+	uint32 stone = 1;//灵石
+    uint32 tili = 2; //体力
+	int32 videoMultiple = 3; //观看视频获得几倍收益 0则不用显示视频加倍按钮
+	bool done = 4; //是否已经领取
+}
+
+//0x000108
+message BackGetSign {
+    enum RetCode {
+        RC_OK =0;
+        RC_EMPTY =1; //没有收益可领取
+        RC_OTHER = 2;
+    }
+    RetCode code = 1;
+    string msg = 2;		//失败描述 一般为空
+    uint32 stone = 3;//灵石
+    uint32 tili = 4; //体力
+}
+
+
+// 0x00010A 用户数据(根据key)
+// key = 内容的全拼音
+// key = lianxuqiandao  连续签到天数 value = "3"
+message SendPlayerKV {
+	string key = 1;
+	string value = 2;
+}
+
+//0x000110
+message BackStartVideo {
+    enum RetCode {
+        RC_OK =0;
+        RC_CD =1; //冷却中
+        RC_NOT_ENOUGTH =2; //视频播放数量上限
+        RC_INVALID_KEY =3; //无效的key
+        RC_EMPTY = 4; //没有收益可领取
+        RC_OTHER = 5;
+    }
+    RetCode code = 1;
+    string msg = 2;		//失败描述 一般为空
+    int32 leftCd = 3; //如果是RC_CD 剩余冷却时间
+    int64 id = 4; //视频唯一标识//RC_OK 情况下
+    string key = 5; //回传
+    string name = 6;//本次使用哪家的视频
+    bool isBanner = 7;
+}
+
+//0x000111
+message BackFinishVideo {
+    enum RetCode {
+        RC_OK =0;
+        RC_INVALID_ID =1; //视频标识错误
+        RC_INTERVAL =2; //从StartVideo到FinishVideo时间太长
+        RC_EMPTY =3; //没有收益可领取
+        RC_OTHER = 4;
+    }
+    RetCode code = 1;
+    string msg = 2;		//失败描述 一般为空
+    string key = 3;//行为 RC_OK 情况下 客户端根据此key unlock具体行为
+    uint32 stone = 4;//灵石
+    uint32 tili = 5; //体力
+    bool isBanner = 6;
+}
+
+// 0x000112 系统广播消息
+message BroadcastMsg {
+	repeated string list = 1;
+}
+
+// 0x000113 行为信息 登录完成后延时发送
+message BehaviorInfo {
+	bool hasSign = 1; // = yes 今日是否有签到可领取
+}
+
+// 0x000114 通知客户端显示视频弹框
+message SendVideoBox {
+	 string key = 1;  //gold 获取金币 offline 离线收益 wheel 转盘抽奖 sign 签到 .....
+	 int32 videoMultiple = 2; //观看视频获得几倍收益 0则不用显示视频加倍按钮
+	 bool putong = 3;//是否可普通领取
+	 string title = 4; //视频弹框的标题文字
+	 string content = 5; //视频弹框描述文字
+	 bool hasBanner = 6;//是否带banner广告
+     uint32 stone = 7;//灵石
+     uint32 tili = 8; //体力
+}
+
+// 0x000115 VideoBox中普通领取按钮点击后的反馈
+message BackBoxPutongButton {
+    enum RetCode {
+        RC_OK =0;
+        RC_INVALID_KEY = 1; //无效的key
+        RC_EMPTY = 2; //没有收益可领取
+        RC_OTHER = 3;
+    }
+    RetCode code = 1;
+    string msg = 2;		//失败描述 一般为空
+    uint32 stone = 3;//添加的灵石 RC_OK 情况下
+    uint32 tili = 4; //添加的体力 RC_OK 情况下
+}
+
+//0x00010D
+message ConnectAddress {
+	string vpsGroup = 1; //域名组
+	repeated string domain = 2;
+}
+
+// 0x0001FF 服务器主动踢出用户
+message Logout {
+    enum RetCode {
+        RC_OTHER = 0; //未知原因
+        RC_CONFILICT_LOGIN =1; //其它地方登录
+        RC_NODE_CLOSED =2; //游戏关闭
+        RC_GM =3;//管理员踢下线
+     }
+	RetCode code = 1;
+	string msg = 2;		//失败描述 一般为空
+}
