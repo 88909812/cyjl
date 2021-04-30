@@ -1,5 +1,6 @@
 syntax = "proto3";
 package message;
+import "message.proto";
 //option  go_package = "gonet/pb/login_s";//设置go包的可选项
 // 0x000001
 message BackHeartBeat {
@@ -19,7 +20,6 @@ message BackLogin {
         uint32 exp = 7; //修为
 		uint32 money = 8; //单位 分
 		uint32 lvl = 9;  //等级 0 - 100  10, 20, ... 100 是大等级 11 为小等级
-
 	}
 	enum RetCode {
         RC_OK =0;
@@ -32,6 +32,9 @@ message BackLogin {
         RC_VERSION_ERROR =7;
         RC_PASSWORD_ERROR =8;
         RC_ILLEGAL_CONTENT =9; //非法字段
+        RC_BUSY = 10;  //系统繁忙，请稍候再试
+        RC_INVALID_JSCODE_MP = 11;  //微信平台code无效
+        RC_TOO_FAST = 12;  //登录请求频繁
     }
 	RetCode code = 1;		//0成功，其他失败
 	string msg = 2;		//失败原因
@@ -41,17 +44,22 @@ message BackLogin {
 	bool isReview = 6; //check是否审核版本，弥补从web端获取状态的错误
 	bool debug = 7; // 是否测试服 可以显示gm命令框
 	uint32 story = 8; // 剧情(新手引导数据)
-	uint32 lastGuanKa = 9; // 上次正在玩的关卡 0代表没有
+	repeated GuanKaIng lastGuanKa = 9; // 当前正在玩的各类关卡
 	uint32 leftTiliSec = 10; // 剩余多少秒后获得一个体力
 }
 
 // 0x000101
 message BackCyExplain {
-	string pinyin = 1;  //拼音
+	repeated string pinyin = 1;  //拼音
 	string explain = 2; //释义
 	string source = 3; //出处
 }
 
+// 0x000102 重置体力获取CD 0代表已满
+message UpdateLeftTiliSec {
+    int64 timeStamp = 1;// 当剩余秒数>0 发送此条协议的时间戳 
+    uint32 val = 2; //秒数
+}
 
 // 0x000103 服务器主动推送属性改变
 message UserAttr {
@@ -73,7 +81,7 @@ message RankData
 	{
 	    uint32 rank = 1;
 		int64 userId = 2;
-        string	name = 3;
+        string name = 3;
 		uint32 lvl = 4;
 		string avatar = 5; //长度小于5为系统头像 否则为url
 		uint32 stone = 6;
@@ -91,6 +99,17 @@ message RankData
 //0x000105 重置
 message SendLeftTiliSec {
 	uint32 sec = 1;//剩余秒数
+}
+
+
+//0x000106 修为升级进度条 这里的exp和玩家属性的exp不是一个概念
+message SendLvlExp {
+    uint32 addExp = 1; //本次增加了多少
+    uint32 finalExp = 2; // 分子
+    uint32 finalMaxExp = 3; // 分母
+    bool lvlup = 4; //是否升级了
+    string currName = 5; //本级名称
+    string nextName = 6; //下级名称
 }
 
 
@@ -155,9 +174,12 @@ message BackFinishVideo {
     RetCode code = 1;
     string msg = 2;		//失败描述 一般为空
     string key = 3;//行为 RC_OK 情况下 客户端根据此key unlock具体行为
-    uint32 stone = 4;//灵石
-    uint32 tili = 5; //体力
-    bool isBanner = 6;
+    bool isBanner = 4;
+    uint32 stone = 5;//灵石
+    uint32 tili = 6; //体力
+    uint32 exp = 7; //修为
+    uint32 money = 8; //
+    
 }
 
 // 0x000112 系统广播消息
@@ -180,6 +202,8 @@ message SendVideoBox {
 	 bool hasBanner = 6;//是否带banner广告
      uint32 stone = 7;//灵石
      uint32 tili = 8; //体力
+     uint32 exp = 9; //修为
+     uint32 money = 10; 
 }
 
 // 0x000115 VideoBox中普通领取按钮点击后的反馈
@@ -194,6 +218,8 @@ message BackBoxPutongButton {
     string msg = 2;		//失败描述 一般为空
     uint32 stone = 3;//添加的灵石 RC_OK 情况下
     uint32 tili = 4; //添加的体力 RC_OK 情况下
+    uint32 exp = 5; //添加的修为 RC_OK 情况下
+    uint32 money = 6; // RC_OK 情况下
 }
 
 //0x00010D

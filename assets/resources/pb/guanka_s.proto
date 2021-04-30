@@ -1,45 +1,87 @@
 syntax = "proto3";
 package message;
-import "message.proto";
+
 
 message GuanKaInfo {
-    uint32 id = 1;
-    string identifier = 2; //关卡交互校验标识
-    uint32 width = 3;
-    uint32 height = 4;
+    uint32 id = 1;   //此处代表管卡内容Id, 不是管卡Id , 多个管卡可以使用多个管卡内容Id 客户端忽略此字段
+    uint32 width = 2;
+    uint32 height = 3;
     message Charactor {
         string str = 1;
         uint32 pos = 2;  //y*row + x
         bool isBlank = 3; //是否是需要填的位置 如果是显示空白
     }
-    repeated Charactor list = 5;
-    repeated string cy = 6;
-    repeated string selection = 7; //可选的填选字
+    repeated Charactor list = 4;
+    repeated string cy = 5;
+    repeated string selection = 6; //可选的填选字
 }
 
+message GuanKaConfig {
+    uint32 id = 1;   //管卡Id
+    GuanKaInfo data = 2;
+    message Ad {
+       uint32 stone = 1;  // 观看广告视频后获取的灵石奖励 0代表此项为空
+       uint32 tili = 2;  // 观看广告视频后获取的体力奖励 0代表此项为空
+       uint32 exp = 3;  // 观看广告视频后获取的修为奖励 0代表此项为空
+    }
+    repeated Ad adInSelection = 3; //selection区域出现广告 观看广告后获取属性 如果有 在可选字区域随机出来对应个数的 AD按钮
+}
 //0x010001 发送题库
 message GuanKaInfoList {
-    repeated GuanKaInfo list = 1;
+    repeated GuanKaConfig list = 1;
 }
 
 //0x010002
 message BackStartGuanKa {
-     uint32 id = 1;
-     string identifier = 2;
-     uint32 freeTipNum = 3; //免费提示次数 0 则看视频
-     message Cy {
-        string str = 1;
-        uint32 stone = 2;  // 完成此成语获取的灵石奖励
-     }
-     repeated Cy cylist = 4;
+    enum RetCode {
+        RC_OK =0;
+        RC_WRONG_ID = 1; //错误的id 必须是当前未完成的ID 或者下一个新的ID        
+        RC_NOT_ENOUGH_TILI = 2; //体力不足
+        RC_OTHER = 3;  
+    }
+    RetCode code = 1;       //0成功，其他失败
+    string msg = 2;     //失败原因
+    uint32 id = 3;
+    string identifier = 4;
+    uint32 freeTipNum = 5; //免费提示次数 0 则看视频
+    message Cy {
+       string str = 1;
+       uint32 stone = 2;  // 完成此成语获取的灵石奖励
+    }
+    repeated Cy cylist = 6;
 }
 
 //0x010003  显示通关奖励领取
+// 如果不返回RC_OK 无法继续下一关
 message BackGuanKaComplete {
-    uint32 videoMultiple = 1;  // 视频几倍 0 则只能普通领取
-    uint32 stone = 2;  // 完成此关获取的灵石奖励
-    uint32 tili = 3;  // 完成此关获取的体力奖励
-    uint32 exp = 4;  // 完成此关获取的修为奖励
+    enum RetCode {
+        RC_OK =0;
+        RC_WRONG_ID = 1; //错误的id
+        RC_WRONG_IDENTIFIER = 2; //错误的标识
+        RC_OTHER = 3;  
+    }
+    RetCode code = 1;       //0成功，其他失败
+    string msg = 2;     //失败原因
+    uint32 videoMultiple = 3;  // 视频几倍 0 则只能普通领取
+    uint32 stone = 4;  // 完成此关获取的灵石奖励
+    uint32 tili = 5;  // 完成此关获取的体力奖励
+    uint32 exp = 6;  // 完成此关获取的修为奖励
+}
+
+//0x010004 通关奖励领取 (普通领取和视频领取) 领取成功后会立即发送0x000106协议
+message BackGetGuanKaAward {
+    enum RetCode {
+        RC_OK =0;
+        RC_WRONG_ID = 1; //错误的id
+        RC_WRONG_IDENTIFIER = 2; //错误的标识
+        RC_ALREADY_REWARD = 3; //重复领取
+        RC_OTHER = 4;  
+    }
+    RetCode code = 1;       //0成功，其他失败
+    string msg = 2;     //失败原因
+    uint32 stone = 3;  // 灵石奖励
+    uint32 tili = 4;  // 体力奖励
+    uint32 exp = 5;  // 修为奖励
 }
 
 //0x01000F  已通关

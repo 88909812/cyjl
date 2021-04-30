@@ -9,7 +9,7 @@ message RequestWithDraw {
 }
 
 //0x000802
-message GetMoneyDetail
+message GetStoneDetail
 {
 	uint32 pageIndex = 1;  //第几页
 	uint32 pageSize = 2; //每页几条

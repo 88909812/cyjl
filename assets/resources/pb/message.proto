@@ -32,3 +32,9 @@ message RpcPacket{
     bytes RpcBody = 4;
 }
 
+//关卡进行时
+message GuanKaIng{
+    string tag = 1;   //管卡类型 空代表主观卡 其它后加
+    uint32 currentId = 2;   //当前管卡Id
+}
+

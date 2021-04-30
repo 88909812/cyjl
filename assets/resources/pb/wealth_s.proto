@@ -19,15 +19,12 @@ message BackRequestWithDraw {
 }
 
 //0x000802
-message MoneyDetail
+message StoneDetail
 {
 	message Detail
 	{
-		uint32 time = 1;  // 发生时间
-		sint64 val = 2;  // 变化(单位 分) 正 负
-		int32 withdrawState = 3;  //非提现明细 此值=-1  提现状态 0 等待审核 1 正在处理 2 已提交到第三方 3 提交第三方失败 10 提现成功 100 被取消
-		string title = 4;
-		string content = 5;
+		uint32 time = 1;  // 发生时间 时间戳
+		uint32 stone = 2;  // 灵石数量
 	}
 	int32 pageCount = 1;
     int32 pageIndex = 2;

@@ -9,7 +9,8 @@ message RequestGuanKaInfo {
 
 //0x010002 开始关卡
 message StartGuanKa {
-    uint32 id = 1;
+	string tag = 1;  //何种关卡
+    uint32 id = 2;
 }
 
 //0x010003
@@ -20,6 +21,15 @@ message SendCyComplete {
 
 //0x010004 关卡完成 关卡是否完成正确 服务端不进行检测 客户端检测正确即可
 message SendGuanKaComplete {
-    uint32 id = 1;
-    string identifier = 2; //关卡交互校验标识
+    string identifier = 1; //关卡交互校验标识
+}
+
+//0x010005 使用免费提示
+message SendUseFreeTip {
+    string identifier = 1; //关卡交互校验标识
+}
+
+//0x010006 领取管卡完成奖励
+message GetGuanKaAward {
+    string identifier = 1; //关卡交互校验标识
 }
