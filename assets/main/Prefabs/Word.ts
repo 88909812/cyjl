@@ -17,11 +17,6 @@ export default class Word extends BaseNode {
     }
     onEnable(){
         super.onEnable();
-        this.onEventUI('BackCell',(cell:{index:number,word:string})=>{
-            if (this.data.index == cell.index && this.data.word == cell.word) {
-                this.setReduce(false);
-            }
-        });
     }
     initWord (index:number,str:string) {
         this.data = {

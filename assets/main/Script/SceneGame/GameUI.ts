@@ -4,8 +4,16 @@ import { PackageBase } from '../net/PackageBase';
 const {ccclass, property} = cc._decorator;
 @ccclass
 export default class GameUI extends BaseView {
+    cells = [];
+    @property(cc.Label)
+    checkpointLab:cc.Label = null;
+
+    checkpointIndex = 1;
+    c_width = 9;
+    c_height = 9;
     onLoad () {
         super.onLoad();
+        this.checkpointLab.string = '第'+this.checkpointIndex+'关';
     }
     onEnable() {
         super.onEnable();

@@ -44,11 +44,6 @@ export default class IdiomCell extends BaseNode {
                 this.setSelect(false);
             }
         });
-        this.onEventUI('onClickWord',(data)=>{
-            if (this.isSelect) {
-                this.setCell(data);
-            }
-        });
     }
 
     initCell (cell:{str:string,pos:number,isBlank:boolean},width:number,height:number) {
@@ -103,7 +98,7 @@ export default class IdiomCell extends BaseNode {
         }
         this.isSelect = isSelect;
     }
-    private setCell(data:{index:number,word:string}){
+    setCell(data:{index:number,word:string}){
         if (this.label.string != '') {
             app.uiViewEvent.emit('BackCell',this.wordData);
         }

@@ -10,7 +10,7 @@ const {ccclass, property} = cc._decorator;
 const KEY = 0x88;
 
 @ccclass
-export default class LoginScene extends BaseNode {
+export default class Hall extends BaseNode {
     @property(cc.Node)
     btnVisitorLogin:cc.Node = null;
     @property(cc.Node)

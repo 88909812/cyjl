@@ -9,14 +9,12 @@ export default class TipPanel extends BasePanel {
     title: cc.Label = null;
 
     @property(cc.Node)
-    closeBtnNode:cc.Node = null;
-    @property(cc.Node)
     yesBtnNode:cc.Node = null;
     @property(cc.Node)
     noBtnNode:cc.Node = null;
 
-    @property([cc.SpriteFrame])
-    btnFrames:cc.SpriteFrame[]= [];
+    // @property([cc.SpriteFrame])
+    // btnFrames:cc.SpriteFrame[]= [];
 
     CallFunConfirm = null;
     CallFunCancel = null;
@@ -25,11 +23,6 @@ export default class TipPanel extends BasePanel {
     onLoad () {
         super.onLoad();
     }
-
-    start () {
-
-    }
-
     onEnable(){
         super.onEnable();
 
@@ -49,21 +42,19 @@ export default class TipPanel extends BasePanel {
         //是否是确认框（只有一个确定按钮）
         if (args.isConfirm) {
             this.noBtnNode.active = false;
-            this.closeBtnNode.active = false;
             this.yesBtnNode.x = 0;
         }else{
-            this.closeBtnNode.active = true;
             this.noBtnNode.active = true;
-            this.yesBtnNode.x = 120;
-            this.noBtnNode.x = -120;
+            this.yesBtnNode.x = 140;
+            this.noBtnNode.x = -140;
         }
 
-        if (args.isVideo) {
-            //是否是看广告的确认框
-            this.yesBtnNode.getComponent(cc.Sprite).spriteFrame = this.btnFrames[1];
-        } else {
-            this.yesBtnNode.getComponent(cc.Sprite).spriteFrame = this.btnFrames[0];
-        }
+        // if (args.isVideo) {
+        //     //是否是看广告的确认框
+        //     this.yesBtnNode.getComponent(cc.Sprite).spriteFrame = this.btnFrames[1];
+        // } else {
+        //     this.yesBtnNode.getComponent(cc.Sprite).spriteFrame = this.btnFrames[0];
+        // }
     }
 
     hide(){

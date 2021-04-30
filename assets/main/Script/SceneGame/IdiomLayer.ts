@@ -1,4 +1,5 @@
 import IdiomCell from '../../Prefabs/IdiomCell';
+import { app } from '../app';
 import BaseNode from '../base/BaseNode';
 import { CellStatus } from '../GameDefine';
 import { Message } from '../net/NetDefine';
@@ -11,26 +12,35 @@ export default class IdiomLayer extends BaseNode {
     @property(cc.Prefab)
     cellPfb:cc.Prefab = null;
     nodePool:cc.NodePool = new cc.NodePool();
+    idiomCells:IdiomCell[] = [];
     onLoad () {
         super.onLoad();
-        
-        let width = 9;
-        let height = 9;
-        let cells = '护发独揽身上搜飞机好强噢未发';
-        for (let index = 0; index < cells.length; index++) {
-            const cell = {str:cells[index],pos:index,isBlank:Boolean(index%2)};
-            let itemNode = this.nodePool.get()||cc.instantiate(this.cellPfb);
-            itemNode.parent = this.node;
-            itemNode.getComponent(IdiomCell).initCell(cell,width,height);
-        }
-        if (width==8&&height==8) {
-            this.node.scale = Scale_8X8;
-        }else{
-            this.node.scale = Scale_9X9;
-        }
     }
     onEnable() {
         super.onEnable();
+        this.onEventUI('onClickWord',(data)=>{
+            let isSuccess = false;
+            for (let index = 0; index < this.idiomCells.length; index++) {
+                const idiomCell = this.idiomCells[index];
+                if (idiomCell.isSelect) {
+                    idiomCell.setCell(data);
+                    isSuccess = true;
+                    break;
+                }
+            }
+            if (!isSuccess) {
+                app.uiViewEvent.emit('BackCell',data);
+            }else{
+                for (let index = 0; index < this.idiomCells.length; index++) {
+                    const idiomCell = this.idiomCells[index];
+                    if (idiomCell.label.string == '') {
+                        idiomCell.setSelect();
+                        break;
+                    }
+                }
+            }
+        });
+
         this.onEventUI('IdiomComplete',(idiomCells:IdiomCell[])=>{
             let isRight = true;
             for (let index = 0; index < idiomCells.length; index++) {
@@ -57,7 +67,34 @@ export default class IdiomLayer extends BaseNode {
     onDisable(){
         super.onDisable();
     }
+    init(cells,width,height){
+        this.clearAllNode();
+        console.log('cells==',cells);
+        for (let index = 0; index < cells.length; index++) {
+            const cell = cells[index];
+            let itemNode = this.nodePool.get()||cc.instantiate(this.cellPfb);
+            itemNode.parent = this.node;
+            let idiomCell = itemNode.getComponent(IdiomCell)
+            idiomCell.initCell(cell,width,height);
+            this.idiomCells.push(idiomCell);
+        }
+        //默认选择第一个空白元素
+        for (let index = 0; index < cells.length; index++) {
+            const cell = cells[index];
+            if (cell.isBlank) {
+                this.idiomCells[index].setSelect();
+                break;
+            }
+        }
+        if (width==8&&height==8) {
+            this.node.scale = Scale_8X8;
+        }else{
+            this.node.scale = Scale_9X9;
+        }
+    }
+
     clearAllNode(){
+        this.idiomCells = [];
         let children:cc.Component[] = this.node.getComponentsInChildren(IdiomCell);
         for(let i = children.length - 1; i >= 0; i--) {
             let node = children[i].node;

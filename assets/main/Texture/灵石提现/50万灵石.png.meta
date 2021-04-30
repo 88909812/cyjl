@@ -1,0 +1,36 @@
+{
+  "ver": "2.3.5",
+  "uuid": "c7aa87f1-790b-4660-b8e2-34177d9018b9",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 139,
+  "height": 120,
+  "platformSettings": {},
+  "subMetas": {
+    "50万灵石": {
+      "ver": "1.0.4",
+      "uuid": "6856c435-a9d1-4db6-bbea-fc01aa0dba68",
+      "rawTextureUuid": "c7aa87f1-790b-4660-b8e2-34177d9018b9",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 139,
+      "height": 120,
+      "rawWidth": 139,
+      "rawHeight": 120,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
