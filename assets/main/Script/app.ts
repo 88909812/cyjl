@@ -27,7 +27,7 @@ export module app{
     export let versionCode = '1.0.0';
     export let ipConfig = {
         time: new Date().getTime(),
-        ipArr: ['121.196.50.252', '192.168.0.8:31701', '127.0.0.1', '127.0.0.1:31701'],
+        ipArr: ['192.168.0.38:31700'],
     };
     export let channelConfig = {
         domain: '121.196.50.252:8080',//http请求地址

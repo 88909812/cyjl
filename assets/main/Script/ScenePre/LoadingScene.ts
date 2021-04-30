@@ -51,7 +51,7 @@ export default class LoadingScene extends cc.Component {
         }, (err, objects) => {
             if (err) {cc.error('LoadingScene::img error', err);}
             //this.loadPfb();
-            cc.director.loadScene('GameScene');
+            cc.director.loadScene('Hall');
         });
     }
     // loadPfb(){

@@ -6,98 +6,29 @@ import UIManager from '../manager/UIManager';
 import PlatformManager from '../manager/PlatformManager';
 import { app } from "../app";
 const {ccclass, property} = cc._decorator;
-//异或的密钥
-const KEY = 0x88;
+
 
 @ccclass
 export default class Hall extends BaseNode {
-    @property(cc.Node)
-    btnVisitorLogin:cc.Node = null;
-    @property(cc.Node)
-    btnWechatLogin:cc.Node = null;
-    @property(cc.Node)
-    btnCopyAccount:cc.Node = null;
-    @property(cc.Label)
-    versionCode:cc.Label = null;
-    accInput:cc.EditBox = null;
     ipIndex = 0;
-
     accountID = '869614036237424';
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
         super.onLoad();
-
-        this.setLoginBtnActive(false);
-        this.accInput = this.node.getComponentInChildren(cc.EditBox);
-        if (CC_PREVIEW||cc.sys.isBrowser) {
-            this.btnWechatLogin.destroy();
-            this.btnWechatLogin = null;
-            app.loginParam.accountID = app.loginParam.accountID || this.accountID;
-            this.accInput.string = app.loginParam.accountID;
-        } else {
-            this.btnVisitorLogin.destroy();
-            this.btnVisitorLogin = null;
-
-            if (app.loginParam.session) {
-                this.accInput.string = app.loginParam.session;
-            }
-        }
-        this.versionCode.string = 'v'+app.versionCode;
-
-        this.accInput.node.active = false;
-        this.btnCopyAccount.active = false;
     }
 
     start () {
-        app.sever.close();
-
-        if (CC_PREVIEW) {
-            this.accInput.node.active = true;
-            this.btnCopyAccount.active = true;
-            for (let index = 0; index < app.ipConfig.ipArr.length; index++) {
-                const ipData = app.ipConfig.ipArr[index];
-                let ipNode = new cc.Node('ipNode');
-                ipNode.parent = this.node;
-                ipNode.color = cc.color(255, 255, 255);
-                ipNode.y = 200 + index*100;
-                ipNode.addComponent(cc.Label).string = ipData;
-                ipNode.on('touchend', () => {
-                    this.ipIndex = index;
-                    app.uiManager.showUI('MessageNode', '已修改ip为：' + app.ipConfig.ipArr[this.ipIndex]);
-                    this.setLoginBtnActive(true);
-                });
-            }
+        if (CC_PREVIEW||cc.sys.isBrowser) {
+            app.loginParam.accountID = app.loginParam.accountID || this.accountID;
+            this.connectSever();
         }else{
-            //todo:如果有登录记录，则刷新session直接登录(点击退出登录时，记得清空app.loginParam.session！！！)
-            if (!this.isNeedWechatAuth()) {
-                this.updateSession();
-            } else {
-                this.setLoginBtnActive(true);
-            }
+            
         }
         //--------------------------------------------------
     }
     onEnable(){
         super.onEnable();
-
-        this.onEventUI('WXSendAuthCallBack',(errCode,code)=>{
-            if (errCode == 0) {
-                //这里需要去http服务器获取session
-                this.scheduleOnce(()=>{
-                    this.requireSession(code);
-                },0.05); 
-            }else{
-                this.setLoginBtnActive(true);
-                let args = {
-                    isConfirm:true,
-                    content:'需要用户授权后才能登录游戏'
-                }
-                app.uiManager.showUI('TipPanel',args,()=>{
-                    app.platform.WXSendAuth();
-                });
-            }
-        });
 
         let listeners = ['BackLogin' ];
         this.register(listeners);
@@ -123,10 +54,10 @@ export default class Hall extends BaseNode {
             cc.log('connect success');
             app.waitingPanel.hide();
 
-            if (this.btnWechatLogin) {
-                this.sendWechatLogin(); 
-            }else{
+            if (CC_PREVIEW||cc.sys.isBrowser) {
                 this.sendVisitorLogin();
+            }else{
+                this.sendWechatLogin(); 
             }
         });
         app.waitingPanel.show(5,()=>{
@@ -134,117 +65,6 @@ export default class Hall extends BaseNode {
             this.ipIndex++;
             this.connectSever();
         });
-    }
-    updateSession(){
-        let imei: string = app.platform.getIMEI();
-        if (imei == '') {
-            imei = this.accountID;
-        }
-        let params = {
-            session_id: app.loginParam.session,
-            account_id: app.loginParam.userId,
-            group_name:app.channelConfig.group,
-            uuid: imei,
-        };
-        HttpFormPost('api/v1/user/refresh-session',params,(res)=>{
-            if (res.code == 0) {
-                app.loginParam.session = res.data.session;
-                cc.sys.localStorage.setItem('idomLoginParam', JSON.stringify(app.loginParam));
-                if (res.data.ips && res.data.ips.length != 0) {
-                    app.ipConfig.ipArr = [];
-                    for (let index = 0; index < res.data.ips.length; index++) {
-                        let address = res.data.ips[index];
-                        let port = '';
-                        let ip = address;
-                        if (address.indexOf(":") != -1) {
-                            port = address.substr(address.indexOf(":"));
-                            ip = address.substr(0, address.indexOf(":"));
-                        }
-                        app.ipConfig.ipArr.push(this.Decrypt(ip) + port);
-                    }
-                    this.connectSever();
-                }else{
-                    app.uiManager.showUI('MessageNode','登录入口未开启');
-                    this.setLoginBtnActive(true);
-                }
-            }else if (res.code == 1006) {
-                this.sendLoginFail(res.code,app.loginParam.session);
-                app.loginParam.session = '';
-                let args = {
-                    isConfirm:true,
-                    content:'用户授权已过期，请重新授权'
-                }
-                app.uiManager.showUI('TipPanel',args,()=>{
-                    app.platform.WXSendAuth();
-                },()=>{
-                    app.platform.WXSendAuth();
-                });
-            }else{
-                app.uiManager.showUI('MessageNode',res.message);
-                this.setLoginBtnActive(true);
-            }
-        },()=>{
-            this.sendLoginFail(app.NetError.HttpReqFail,app.loginParam.session);
-            let args = {
-                isConfirm:true,
-                content:'网络状态不佳，请在网络稳定后重试'
-            }
-            app.uiManager.showUI('TipPanel',args,()=>{
-                this.updateSession();
-            });
-        });
-    }
-
-    requireSession(code){
-        let imei: string = app.platform.getIMEI();
-        if (imei == '') {
-            imei = this.accountID;
-        }
-        let params = {
-            app_id: app.platform.getWechatAppID(),
-            code: code,
-            source: app.channelConfig.channel,
-            uuid: imei,
-            group_name:app.channelConfig.group
-        };
-        HttpFormPost('api/v1/user/login/wechat',params,(res)=>{
-            if (res.code == 0) {
-                app.loginParam.session = res.data.session;
-                cc.sys.localStorage.setItem('idomLoginParam', JSON.stringify(app.loginParam));
-
-                if (res.data.ips && res.data.ips.length != 0) {
-                    app.ipConfig.ipArr = [];
-                    for (let index = 0; index < res.data.ips.length; index++) {
-                        let address = res.data.ips[index];
-                        let port = '';
-                        let ip = address;
-                        if (address.indexOf(":") != -1) {
-                            port = address.substr(address.indexOf(":"));
-                            ip = address.substr(0, address.indexOf(":"));
-                        }
-                        app.ipConfig.ipArr.push(this.Decrypt(ip) + port);
-                    }
-                    this.connectSever();
-                }else{
-                    app.uiManager.showUI('MessageNode','登录入口未开启');
-                    this.setLoginBtnActive(true);
-                }
-            }else{
-                this.sendLoginFail(res.code);
-                app.uiManager.showUI('MessageNode',res.message);
-                this.setLoginBtnActive(true);
-            }
-        },()=>{
-            this.sendLoginFail(app.NetError.HttpReqFail);
-            let args = {
-                isConfirm:true,
-                content:'网络状态不佳，请在网络稳定后重试'
-            }
-            app.uiManager.showUI('TipPanel',args,()=>{
-                this.requireSession(code);
-            });
-        });
-        
     }
 
     BackLogin(res){
@@ -281,7 +101,6 @@ export default class Hall extends BaseNode {
             }
             app.uiManager.showUI('MessageNode', tipStr);
             
-            this.setLoginBtnActive(true);
             this.sendLoginFail(res.code,app.loginParam.session);
         }
 
@@ -302,21 +121,6 @@ export default class Hall extends BaseNode {
         pack.d(msg).to(app.sever);
     }
 
-    onClickVisitor(){
-        this.connectSever();
-    }
-
-    onClickWechat() {
-        if (this.isNeedWechatAuth()) {
-            app.platform.WXSendAuth();
-        } else {
-            this.updateSession();
-        }
-        this.setLoginBtnActive(false);
-    }
-    isNeedWechatAuth(){
-        return !app.loginParam.session || app.loginParam.session == '' || !app.loginParam.userId;
-    }
     sendVisitorLogin(){
         let PB = app.PB;
 
@@ -327,8 +131,12 @@ export default class Hall extends BaseNode {
         }
 
         let Login = new PB.message.Login();
-        Login.uuid = imei;
         Login.BuildNo = app.versionCode;
+        Login.Env = 'test';
+        Login.EnterComplete = true;
+        Login.tick = new Date().getTime();
+        Login.content = imei;
+        Login.ip = app.clientIP;
         Login.os = cc.sys.os + '_' + app.versionCode;
         Login.device = app.platform.getPhoneType();
         Login.group = app.channelConfig.group;
@@ -367,26 +175,6 @@ export default class Hall extends BaseNode {
 
     
 
-    setLoginBtnActive(bool:boolean){
-        if (this.btnWechatLogin) {
-            this.btnWechatLogin.active = bool;
-        }
-
-        if (this.btnVisitorLogin) {
-            this.btnVisitorLogin.active = bool;
-        }
-    }
-
-    onTextChanged(){
-        if (CC_PREVIEW||cc.sys.isBrowser) {
-            app.loginParam.accountID = this.accInput.string;
-        }else{
-            app.loginParam.session = this.accInput.string;
-        }
-    }
-    onClickCopyAccount(){
-        app.platform.setClipboardData(this.accInput.string);
-    }
     sendLoginFail(code:number = app.NetError.ConnentFail, session = '') {
         let params = {
             severip: app.ipConfig.ipArr[this.ipIndex],
@@ -403,61 +191,7 @@ export default class Hall extends BaseNode {
             cc.log(res);
         });
     }
-    
-    Swap(num) {
-        //十进制转化为8位的二进制字符串
-        let strBinary = ('0'.repeat(8)+parseInt(num).toString(2)).slice(-8);
-        
-        //二进制数相邻位互换
-        let swapByteList = {};
-        for (let index = 0; index < strBinary.length; index++) {
-            swapByteList[index+1] = Number(strBinary[index]);
-        }
-        strBinary = "";
-        for (let index = 1; index <= 7; index = index + 2) {
-            swapByteList[index] = [swapByteList[index+1], swapByteList[index+1] = swapByteList[index]][0];
-        }
-        for (const key in swapByteList) {
-            if (swapByteList.hasOwnProperty(key)) {
-                strBinary += swapByteList[key];
-            }
-        }
-	    return parseInt(strBinary, 2);
-    }
-    Decrypt(ip):string{
-        let result = "";
-        let resultStrArray = ip.split('.');
-        for (let index = 0; index < resultStrArray.length; index++) {
-            const element = resultStrArray[index];
-            let decryptNum = Number(element) ^ KEY;//和秘钥的二进制异或
-            let swapNum = this.Swap(decryptNum);
-            if (!swapNum) {
-                return '';
-            }
-            if (index === 0) {
-                result += swapNum;
-            }else{
-                result += ('.'+swapNum);
-            }
-        }
-        return result;
-    }
-    Encrypt(ip){
-        let result = "";
-        let resultStrArray = ip.split('.');
-        for (let index = 0; index < resultStrArray.length; index++) {
-            const element = resultStrArray[index];
-            let swapNum = this.Swap(element);
-            if (!swapNum) {
-                return '';
-            }
-            if (index === 0) {
-                result += swapNum;
-            }else{
-                result += ('.'+swapNum);
-            }
-        }
-        return result;
-    }
+
+
     // update (dt) {}
 }

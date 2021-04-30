@@ -169,3 +169,61 @@ export function swapArrayElement(arr:[{[x: string]: any}],index1:number,index2:n
     arr[index1] = arr.splice(index2, 1, arr[index1])[0];
     return arr;
 }
+
+//异或的密钥
+const KEY = 0x88;
+export function Swap(num) {
+    //十进制转化为8位的二进制字符串
+    let strBinary = ('0'.repeat(8)+parseInt(num).toString(2)).slice(-8);
+    
+    //二进制数相邻位互换
+    let swapByteList = {};
+    for (let index = 0; index < strBinary.length; index++) {
+        swapByteList[index+1] = Number(strBinary[index]);
+    }
+    strBinary = "";
+    for (let index = 1; index <= 7; index = index + 2) {
+        swapByteList[index] = [swapByteList[index+1], swapByteList[index+1] = swapByteList[index]][0];
+    }
+    for (const key in swapByteList) {
+        if (swapByteList.hasOwnProperty(key)) {
+            strBinary += swapByteList[key];
+        }
+    }
+    return parseInt(strBinary, 2);
+}
+export function Decrypt(ip):string{
+    let result = "";
+    let resultStrArray = ip.split('.');
+    for (let index = 0; index < resultStrArray.length; index++) {
+        const element = resultStrArray[index];
+        let decryptNum = Number(element) ^ KEY;//和秘钥的二进制异或
+        let swapNum = Swap(decryptNum);
+        if (!swapNum) {
+            return '';
+        }
+        if (index === 0) {
+            result += swapNum;
+        }else{
+            result += ('.'+swapNum);
+        }
+    }
+    return result;
+}
+export function Encrypt(ip){
+    let result = "";
+    let resultStrArray = ip.split('.');
+    for (let index = 0; index < resultStrArray.length; index++) {
+        const element = resultStrArray[index];
+        let swapNum = Swap(element);
+        if (!swapNum) {
+            return '';
+        }
+        if (index === 0) {
+            result += swapNum;
+        }else{
+            result += ('.'+swapNum);
+        }
+    }
+    return result;
+}
