@@ -38,11 +38,11 @@ export default class AppInit extends cc.Component {
             console.log(PBKiller.loadAll());
             app.PB = PBKiller.loadAll();
             app.sever = new SocketServer();
-            this.initNet();
-        });
 
-        app.uiBaseEvent.on('onResume',()=>{
-            this.sendHeartBeat();
+            let domainConfig = new DomainGet();
+            domainConfig.initDomain();
+
+            app.uiBaseEvent.emit('NetInit');
         });
     }
 
@@ -61,52 +61,6 @@ export default class AppInit extends cc.Component {
         }
         app.platform.gameInitComplete();
     }
-    initNet(){
-        let domainConfig = new DomainGet();
-        domainConfig.initDomain();
-        this.schedule(this.sendHeartBeat, 10);
-        app.sever.registerHandlers(this,['Logout']);
-    }
-    sendHeartBeat() {
-        if (app.sever && app.sever.isNetOK()) {
-            let HeartBeat = new app.PB.message.HeartBeat();
-            HeartBeat.time = new Date().getTime();
-            let pack = new PackageBase(Message.HeartBeat);
-            pack.d(HeartBeat).to(app.sever);
-        }
-    }
-    Logout(res){
-        let PB = app.PB;
-        cc.log('Logout---',res);
-        //被踢后清空socket
-        app.sever.close();
-        app.userData = {};
-        let msg = '';
-        switch (res.code) {
-            case PB.message.Logout.RetCode.RC_OTHER:
-                msg = '登录未知错误';
-                break;
-            case PB.message.Logout.RetCode.RC_CONFILICT_LOGIN:
-                msg = '其它地方登录';
-                break;
-            case PB.message.Logout.RetCode.RC_LOGIN_CLOSED:
-                msg = '登录关闭';
-                break;
-            case PB.message.Logout.RetCode.RC_GM:
-                msg = '管理员踢下线';
-                break;
-            default:
-                msg = '未知错误';
-                break;
-        }
-        if (res.msg && res.msg.length > 0) {
-            msg = msg + '：\n' + res.msg;
-        }
-        this.scheduleOnce(()=>{
-            app.uiManager.showUI('TipPanel', { content: msg, isConfirm: true });
-        },0.5);
-        
-        cc.director.loadScene('LoginScene');
-    }
+    
     // update (dt) {}
 }
