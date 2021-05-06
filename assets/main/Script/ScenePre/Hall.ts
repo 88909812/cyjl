@@ -1,3 +1,4 @@
+import { app } from '../app';
 import BaseNode from '../base/BaseNode';
 import { Message } from '../net/NetDefine';
 import { PackageBase } from '../net/PackageBase';
@@ -7,10 +8,19 @@ export default class Hall extends BaseNode {
     onLoad () {
         super.onLoad();
     }
+    start(){
+
+
+        
+    }
     onEnable() {
         super.onEnable();
+
     }
     onDisable(){
         super.onDisable();
     }
+
+
+
 }

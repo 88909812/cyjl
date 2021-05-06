@@ -32,6 +32,7 @@ export class Message {
         '0x000103': 'UserAttr',
         '0x000104': 'RankData',
         '0x000105': 'SendLeftTiliSec',//重置签到剩余秒数
+        '0x000106':'SendLvlExp',//修为升级进度条 这里的exp和玩家属性的exp不是一个概念
         '0x000107': 'Sign',
         '0x000108': 'BackGetSign',
 
@@ -53,17 +54,18 @@ export class Message {
         '0x010001': 'GuanKaInfoList',
         '0x010002': 'BackStartGuanKa',
         '0x010003': 'BackGuanKaComplete',//显示通关奖励领取
+        '0x010004':'BackGetGuanKaAward',
         '0x01000F': 'SendReachEnd',//已通关
     }
 
     static attrNameMapValue = {
         'name':'strVal',
-        'gold':'bigVal',
-        'money':'numberVal',
-        'diamond':'numberVal',
-        'lvl':'numberVal',
         'avatar':'strVal',
         'bitVal':'numberVal',
-        'channel':'strVal',
+        'stone':'numberVal',
+        'money':'numberVal',
+        'tili':'numberVal',
+        'exp':'numberVal',
+        'lvl':'numberVal',
     }
 }

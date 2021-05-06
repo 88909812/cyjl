@@ -27,8 +27,8 @@ export default class IdiomCell extends BaseNode {
     
     orginPos:cc.Vec3 = null;
     isSelect = false;
-    state = CellStatus.Normal;
-    data:{str:string,pos:number,isBlank:boolean} = null;//原始数据
+
+    data:{str:string,pos:number,isBlank:boolean,state?:number,write?:string} = null;//原始数据
     girdWidth = 9;
     girdHeight = 9;
     wordData = null;//填入的数据
@@ -46,8 +46,9 @@ export default class IdiomCell extends BaseNode {
         });
     }
 
-    initCell (cell:{str:string,pos:number,isBlank:boolean},width:number,height:number) {
+    initCell (cell:{str:string,pos:number,isBlank:boolean,state?:number,write?:string},width:number,height:number) {
         this.data = cell;
+        
         this.girdWidth = width;
         this.girdHeight = height;
 
@@ -65,34 +66,35 @@ export default class IdiomCell extends BaseNode {
             .to(0.1, { y: this.orginPos.y}, { easing: 'backOut' })
             .start();
 
-        if (cell.isBlank) {
-            this.isSelect = false;
-            this.getComponent(cc.Sprite).spriteFrame = this.unselectFrame;
+        if (cell.state) {
+            this.label.string = cell.write;
 
-            this.state = CellStatus.Empty;
-            this.cell.spriteFrame = null;
-            
+            this.setState(cell.state,0,false);
         }else{
-            this.label.string = cell.str;
-            this.cell.spriteFrame = this.fixedFrame;
-            this.state = CellStatus.Fixed;
+            if (cell.isBlank) {
+                this.setState(CellStatus.Empty);
+            }else{
+                this.data.write = cell.str;
+                this.label.string = cell.str;
+                this.setState(CellStatus.Fixed);
+            }
         }
+        this.isSelect = false;
+        this.getComponent(cc.Sprite).spriteFrame = this.unselectFrame;
     }
     setSelect(isSelect = true){
         if (isSelect) {
-            if (this.state == CellStatus.Fixed || this.state == CellStatus.Right) {
+            if (this.data.state == CellStatus.Fixed || this.data.state == CellStatus.Right) {
                 return;
             }
             app.uiViewEvent.emit('SelectCell',this.data.pos);
             
             if (this.label.string != '') {
-                app.uiViewEvent.emit('BackCell',this.wordData);
+                app.uiViewEvent.emit('BackCell',this.wordData,this.label.string);
             }
 
             this.getComponent(cc.Sprite).spriteFrame = this.selectFrame;
-            this.cell.spriteFrame = null;
-            this.label.string = '';
-            this.state = CellStatus.Empty;
+            this.setState(CellStatus.Empty);
         }else{
             this.getComponent(cc.Sprite).spriteFrame = this.unselectFrame;
         }
@@ -100,46 +102,63 @@ export default class IdiomCell extends BaseNode {
     }
     setCell(data:{index:number,word:string}){
         if (this.label.string != '') {
-            app.uiViewEvent.emit('BackCell',this.wordData);
+            app.uiViewEvent.emit('BackCell',this.wordData,this.label.string);
         }
         this.wordData = data;
+
+        this.data.write = data.word;
         this.label.string = data.word;
+
         this.setState(CellStatus.Normal);
         
         this.judgeComplete();
     }
-    setState(state: number = CellStatus.Normal,delay = 0){
-        
+    setState(state: number = CellStatus.Normal,delay = 0,isPlay = true){
         switch(state){
             case CellStatus.Wrong:
-                if (this.state == CellStatus.Normal) {
-                    this.state = state;
+                if (this.data.state != CellStatus.Right && this.data.state != CellStatus.Fixed) {
+                    this.data.state = state;
                     this.cell.spriteFrame = this.wrongFrame;
                 }
-                cc.Tween.stopAllByTarget(this.node);
-                cc.tween(this.node).set({ angle:0})
-                    .to(0.1, { angle:10})
-                    .to(0.2, { angle:-10})
-                    .to(0.2, { angle:10})
-                    .to(0.2, { angle:-10})
-                    .to(0.1, { angle:0}, { easing: 'backOut' })
-                    .start();
+                if (isPlay) {
+                    cc.Tween.stopAllByTarget(this.node);
+                    cc.tween(this.node).set({ angle: 0 })
+                        .to(0.1, { angle: 10 })
+                        .to(0.2, { angle: -10 })
+                        .to(0.2, { angle: 10 })
+                        .to(0.2, { angle: -10 })
+                        .to(0.1, { angle: 0 }, { easing: 'backOut' })
+                        .start();
+                }
+                
                 break;
             case CellStatus.Right:
                 this.cell.spriteFrame = this.rightFrame;
                 this.setSelect(false);
-                this.state = state;
-                cc.Tween.stopAllByTarget(this.node);
-                cc.tween(this.node).set({ scale:1})
-                    .delay(delay)
-                    .to(0.2, { scale:1.2})
-                    .to(0.1, { scale:1}, { easing: 'backOut' })
-                    .start();
+                this.data.state = state;
+                if (isPlay) {
+                    cc.Tween.stopAllByTarget(this.node);
+                    cc.tween(this.node).set({ scale: 1 })
+                        .delay(delay)
+                        .to(0.2, { scale: 1.2 })
+                        .to(0.1, { scale: 1 }, { easing: 'backOut' })
+                        .start();
+                }
+                break;
+            case CellStatus.Empty:
+                this.label.string = '';
+                this.data.write = '';
+                this.data.state = state;
+                this.cell.spriteFrame = null;
+                break;
+            case CellStatus.Fixed:
+                this.cell.spriteFrame = this.fixedFrame;
+                this.data.state = state;
                 break;
             case CellStatus.Normal:
             default: 
                 this.cell.spriteFrame = this.normalFrame;
-                this.state = state;
+                this.data.state = state;
                 break;
         }
     }

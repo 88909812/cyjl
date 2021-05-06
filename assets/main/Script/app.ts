@@ -18,7 +18,8 @@ export module app{
     export let loginParam:any = {};
     export let loginData = null;
     export let userData:any = {};
-
+    export let levelData:any = {};
+    export let checkPointData:any = {};
     export let userConfig:any = {};
 
     export let uiViewEvent = new cc.EventTarget();//UI消息，用这个派发

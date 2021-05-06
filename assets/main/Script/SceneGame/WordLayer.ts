@@ -66,6 +66,16 @@ export default class WordLayer extends BaseNode {
         }
         this.resetSize();
     }
+    getWords():string[]{
+        let words = [];
+        for (let index = 0; index < this.words.length; index++) {
+            const word = this.words[index];
+            if (!word.isReduce) {
+                words.push(word.label.string);
+            }
+        }
+        return words;
+    }
     resetSize(){
         for (let index = 0; index < this.words.length; index++) {
             const word = this.words[index];

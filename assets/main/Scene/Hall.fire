@@ -1181,7 +1181,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "power",
+    "_name": "lingshi",
     "_objFlags": 0,
     "_parent": {
       "__id__": 21
@@ -2831,6 +2831,18 @@
       "__id__": 8
     },
     "_enabled": true,
+    "power": {
+      "__id__": 14
+    },
+    "lingshi": {
+      "__id__": 25
+    },
+    "level": {
+      "__id__": 37
+    },
+    "exp": {
+      "__id__": 43
+    },
     "_id": "e2PfyjoRxI1J9d8wRFlzXc"
   },
   {
@@ -2922,8 +2934,6 @@
       "__id__": 2
     },
     "_enabled": true,
-    "label": null,
-    "text": "hello",
     "_id": "671s5YGiFGZa4YflZ4LDls"
   }
 ]

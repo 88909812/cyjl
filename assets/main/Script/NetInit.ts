@@ -14,11 +14,6 @@ export default class NetInit extends BaseNode {
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
-        cc.game.addPersistRootNode(this.node);
-
-    }
-    onEnable(){
-        super.onEnable();
         this.onEventUI('NetInit',()=>{
             this.init();
         },'uiBaseEvent');
@@ -29,9 +24,15 @@ export default class NetInit extends BaseNode {
             this.sendHeartBeat();
         },'uiBaseEvent');
     }
+    onDisable(){
+        //重载，防止监听函数消失
+    }
+    onEnable(){
+
+    }
 
     init () {
-        let listeners = ['BackLogin','Logout' ];
+        let listeners = ['BackLogin','Logout','SendLvlExp','UserAttr','GuanKaInfoList' ];
         this.register(listeners);
         //--------------------------------------------------  
 
@@ -129,11 +130,12 @@ export default class NetInit extends BaseNode {
         cc.log('LOGIN---',res);
         app.waitingPanel.hide();
         if (res.code == 0) {
-            app.userData = res.data;
-          
+            app.userData = res;
+            app.uiViewEvent.emit('UpdateUserInfo');
             cc.sys.localStorage.setItem('idomLoginParam', JSON.stringify(app.loginParam));
 
             this.sendConnectData();
+            this.reqGuanKaInfo();
             
         }else{
             let tipStr = '';
@@ -244,6 +246,38 @@ export default class NetInit extends BaseNode {
         //     cc.log(res);
         // });
     }
-
+    UserAttr(res){
+        console.log('UserAttr',res)
+        let data = res.list;
+        for (let index = 0; index < data.length; index++) {
+            const attr = data[index];
+            let valueType = Message.attrNameMapValue[attr.name];
+            app.userData.data[attr.name] = attr[valueType];
+        }
+        app.uiViewEvent.emit('UpdateUserInfo');
+    }
+    SendLvlExp(res){
+        console.log('SendLvlExp',res)
+        app.levelData = res;
+        app.uiViewEvent.emit('UpdateLevelInfo');
+    }
+    reqGuanKaInfo(){
+        if (!app.checkPointData.id||app.checkPointData.id<app.userData.lastGuanKa.main) {
+            let guankaIndex = 1;
+            if (app.userData.lastGuanKa && app.userData.lastGuanKa.main) {
+                guankaIndex = app.userData.lastGuanKa.main;
+            }
+            let RequestGuanKaInfo = new app.PB.message.RequestGuanKaInfo();
+            RequestGuanKaInfo.startId = guankaIndex;
+            RequestGuanKaInfo.num = 1;
+            let pack = new PackageBase(Message.RequestGuanKaInfo);
+            pack.d(RequestGuanKaInfo).to(app.sever);
+        }
+    }
+    GuanKaInfoList(res){
+        console.log(res);
+        app.checkPointData = res.list[0];
+        cc.sys.localStorage.setItem('checkPointData', JSON.stringify(app.checkPointData));
+    }
     // update (dt) {}
 }

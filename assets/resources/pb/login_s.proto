@@ -44,7 +44,7 @@ message BackLogin {
 	bool isReview = 6; //check是否审核版本，弥补从web端获取状态的错误
 	bool debug = 7; // 是否测试服 可以显示gm命令框
 	uint32 story = 8; // 剧情(新手引导数据)
-	repeated GuanKaIng lastGuanKa = 9; // 当前正在玩的各类关卡
+	GuanKaIng lastGuanKa = 9; // 当前正在玩的各类关卡
 	uint32 leftTiliSec = 10; // 剩余多少秒后获得一个体力
 }
 

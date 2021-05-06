@@ -4,6 +4,9 @@ import BaseNode from '../base/BaseNode';
 import { CellStatus } from '../GameDefine';
 import { Message } from '../net/NetDefine';
 import { PackageBase } from '../net/PackageBase';
+import GameScene from './GameScene';
+import WordLayer from './WordLayer';
+
 const Scale_8X8 = 1.125;
 const Scale_9X9 = 1;
 const {ccclass, property} = cc._decorator;
@@ -39,6 +42,7 @@ export default class IdiomLayer extends BaseNode {
                     }
                 }
             }
+            this.saveOperation();
         });
 
         this.onEventUI('IdiomComplete',(idiomCells:IdiomCell[])=>{
@@ -52,10 +56,7 @@ export default class IdiomLayer extends BaseNode {
                 }
             }
             if (isRight) {
-                for (let index = 0; index < idiomCells.length; index++) {
-                    const idiomCell = idiomCells[index];
-                    idiomCell.setState(CellStatus.Right,index/4);
-                }
+                this.sendComplete(idiomCells);
             }else{
                 for (let index = 0; index < idiomCells.length; index++) {
                     const idiomCell = idiomCells[index];
@@ -66,6 +67,29 @@ export default class IdiomLayer extends BaseNode {
     }
     onDisable(){
         super.onDisable();
+    }
+    sendComplete(idiomCells){
+        let idiom = '';
+        for (let index = 0; index < idiomCells.length; index++) {
+            const idiomCell:IdiomCell = idiomCells[index];
+            idiomCell.setState(CellStatus.Right,index/4);
+            idiom+=idiomCell.data.str;
+        }
+
+        let SendCyComplete = new app.PB.message.SendCyComplete();
+        SendCyComplete.identifier = cc.Canvas.instance.getComponent(GameScene).data.identifier;
+        SendCyComplete.cy = idiom;
+        let pack = new PackageBase(Message.SendCyComplete);
+        pack.d(SendCyComplete).to(app.sever);
+    }
+    saveOperation() {
+        let children: IdiomCell[] = this.node.getComponentsInChildren(IdiomCell);
+        for (let index = 0; index < children.length; index++) {
+            const idiomCell = children[index];
+            app.checkPointData.data.list[index] = idiomCell.data;
+        }
+        app.checkPointData.data.selection = cc.Canvas.instance.getComponentInChildren(WordLayer).getWords();
+        cc.sys.localStorage.setItem('checkPointData', JSON.stringify(app.checkPointData));
     }
     init(cells,width,height){
         this.clearAllNode();
@@ -81,7 +105,12 @@ export default class IdiomLayer extends BaseNode {
         //默认选择第一个空白元素
         for (let index = 0; index < cells.length; index++) {
             const cell = cells[index];
-            if (cell.isBlank) {
+            if (cell.state) {//有本地记录的情况
+                if (cell.state == CellStatus.Empty) {
+                    this.idiomCells[index].setSelect();
+                    break;
+                }
+            }else if (cell.isBlank) {//无本地记录的情况
                 this.idiomCells[index].setSelect();
                 break;
             }
@@ -95,7 +124,7 @@ export default class IdiomLayer extends BaseNode {
 
     clearAllNode(){
         this.idiomCells = [];
-        let children:cc.Component[] = this.node.getComponentsInChildren(IdiomCell);
+        let children:IdiomCell[] = this.node.getComponentsInChildren(IdiomCell);
         for(let i = children.length - 1; i >= 0; i--) {
             let node = children[i].node;
             this.nodePool.put(node);

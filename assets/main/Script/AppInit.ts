@@ -34,6 +34,13 @@ export default class AppInit extends cc.Component {
             app.loginParam = JSON.parse(loginParamStr);
         }
 
+        //读取本地关卡数据
+        app.checkPointData = {};
+        let checkPointDataStr = cc.sys.localStorage.getItem('checkPointData');
+        if (checkPointDataStr) {
+            app.checkPointData = JSON.parse(checkPointDataStr);
+        }
+
         PBKiller.preload(() => {
             console.log(PBKiller.loadAll());
             app.PB = PBKiller.loadAll();
@@ -44,13 +51,13 @@ export default class AppInit extends cc.Component {
 
             app.uiBaseEvent.emit('NetInit');
         });
-    }
 
-    start () {
         app.platform = PlatformManager.getIns();
         app.uiManager = UIManager.getIns();
         app.soundManager = SoundManager.getIns();
+    }
 
+    start () {
         app.platform.setKeepScreenOn();
         app.statusBarHeight = app.platform.getStatusBarHeight();
 
