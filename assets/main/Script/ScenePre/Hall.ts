@@ -30,6 +30,10 @@ export default class Hall extends BaseNode {
     onEnable(){
         super.onEnable();
 
+        this.onEventUI('socketClose',()=>{
+            this.connectSever();
+        },'uiBaseEvent');
+
         let listeners = ['BackLogin' ];
         this.register(listeners);
     }
@@ -39,7 +43,7 @@ export default class Hall extends BaseNode {
         if (!app.ipConfig.ipArr || app.ipConfig.ipArr.length <= this.ipIndex) {
             let args = {
                 isConfirm: true,
-                content: '服务器维护中，请稍后再试'
+                content: '服务器维护中，请稍后再试...'
             }
             app.uiManager.showUI('TipPanel', args, () => {
                 this.ipIndex = 0;
@@ -79,8 +83,6 @@ export default class Hall extends BaseNode {
             cc.sys.localStorage.setItem('idomLoginParam', JSON.stringify(app.loginParam));
 
             this.sendConnectData();
-
-            cc.director.loadScene('GameScene');
             
         }else{
             let tipStr = '';
@@ -176,22 +178,21 @@ export default class Hall extends BaseNode {
     
 
     sendLoginFail(code:number = app.NetError.ConnentFail, session = '') {
-        let params = {
-            severip: app.ipConfig.ipArr[this.ipIndex],
-            clientip: app.clientIP,
-            group: app.channelConfig.group,
-            channel: app.channelConfig.channel,
-            session: session,
-            code: code,
-            device: app.platform.getPhoneType(),
-            os: cc.sys.os,
-            uuid: app.platform.getIMEI()
-        }
-        HttpFormPost('api/v1/user/login/failed', { content: JSON.stringify(params) }, (res) => {
-            cc.log(res);
-        });
+        // let params = {
+        //     severip: app.ipConfig.ipArr[this.ipIndex],
+        //     clientip: app.clientIP,
+        //     group: app.channelConfig.group,
+        //     channel: app.channelConfig.channel,
+        //     session: session,
+        //     code: code,
+        //     device: app.platform.getPhoneType(),
+        //     os: cc.sys.os,
+        //     uuid: app.platform.getIMEI()
+        // }
+        // HttpFormPost('api/v1/user/login/failed', { content: JSON.stringify(params) }, (res) => {
+        //     cc.log(res);
+        // });
     }
-
 
     // update (dt) {}
 }

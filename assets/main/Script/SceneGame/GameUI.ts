@@ -25,5 +25,7 @@ export default class GameUI extends BaseView {
     onClickTip(event:cc.Button){}
     onClickReplay(event:cc.Button){}
     onClickLingshi(event:cc.Button){}
-    onClickReturn(event:cc.Button){}
+    onClickReturn(event:cc.Button){
+        cc.director.loadScene('Hall');
+    }
 }

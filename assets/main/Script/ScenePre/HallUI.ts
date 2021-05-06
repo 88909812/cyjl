@@ -25,4 +25,11 @@ export default class HallUI extends BaseNode {
     onClickRank(event:cc.Button){
 
     }
+    
+    onClickAddLingshi(event:cc.Button){
+
+    }
+    onClickAddPower(event:cc.Button){
+        
+    }
 }

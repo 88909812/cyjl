@@ -7,13 +7,10 @@ export default class SoundManager {
         //如果没有设置过，值为undefine，默认有声音
         if (app.userConfig.musicSwitch == false) {
             this.setMusicSwitch(false);
+            this.setEffectsSwitch(false);
         }else{
             this.setMusicSwitch(true);
-        }
-        if (app.userConfig.effectsSwitch == false) {
-            this.setEffectsSwitch(false)
-        }else{
-            this.setEffectsSwitch(true)
+            this.setEffectsSwitch(true);
         }
     }
 	static getIns(): SoundManager {
