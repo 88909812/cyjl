@@ -58,19 +58,13 @@ export default class IdiomCell extends BaseNode {
         this.orginPos = app.IdiomPos[line][column];
 
         this.node.x = this.orginPos.x;
-        this.node.y = this.orginPos.y+MoveY;
+        this.node.y = this.orginPos.y;
 
-        cc.Tween.stopAllByTarget(this.node);
-        cc.tween(this.node).delay((width-line)*0.3)
-            .to(0.4, { y: this.orginPos.y + MoveY*0.2})
-            .to(0.1, { y: this.orginPos.y}, { easing: 'backOut' })
-            .start();
-
-        if (cell.state) {
+        if (cell.state) {//发现用户的操作记录
             this.label.string = cell.write;
-
             this.setState(cell.state,0,false);
-        }else{
+        }else{//无操作记录
+            this.playInitAni();
             if (cell.isBlank) {
                 this.setState(CellStatus.Empty);
             }else{
@@ -81,6 +75,16 @@ export default class IdiomCell extends BaseNode {
         }
         this.isSelect = false;
         this.getComponent(cc.Sprite).spriteFrame = this.unselectFrame;
+    }
+    playInitAni(){
+        let line = Math.floor(this.data.pos/this.girdWidth); 
+
+        this.node.y = this.orginPos.y + MoveY;
+        cc.Tween.stopAllByTarget(this.node);
+        cc.tween(this.node).delay((this.girdWidth - line) * 0.3)
+            .to(0.4, { y: this.orginPos.y + MoveY * 0.2 })
+            .to(0.1, { y: this.orginPos.y }, { easing: 'backOut' })
+            .start();
     }
     setSelect(isSelect = true){
         if (isSelect) {
@@ -110,8 +114,6 @@ export default class IdiomCell extends BaseNode {
         this.label.string = data.word;
 
         this.setState(CellStatus.Normal);
-        
-        this.judgeComplete();
     }
     setState(state: number = CellStatus.Normal,delay = 0,isPlay = true){
         switch(state){
@@ -162,15 +164,19 @@ export default class IdiomCell extends BaseNode {
                 break;
         }
     }
-    judgeComplete(){
+    judgeComplete():boolean{
+        let isComplete = false;
         let lineIdiomCells = this.getLineCells();
         let columnIdiomCells = this.getColumnCells();
         if (lineIdiomCells && lineIdiomCells.length > 1) {//成语最少要2个字
             app.uiViewEvent.emit('IdiomComplete',lineIdiomCells);
+            isComplete = true;
         }
         if (columnIdiomCells && columnIdiomCells.length > 1) {//成语最少要2个字
             app.uiViewEvent.emit('IdiomComplete',columnIdiomCells);
+            isComplete = true;
         }
+        return isComplete;
     }
     private getLineCells():cc.Component[]{
         let line = Math.floor(this.data.pos/this.girdWidth); 

@@ -22,13 +22,16 @@ export class Message {
     static StartGuanKa = '0x010002';// 开始关卡
     static SendCyComplete = '0x010003';// 完成关卡的某个成语 服务端接收后加奖励 客户端自己飞奖励
     static SendGuanKaComplete = '0x010004';//关卡完成 关卡是否完成正确 服务端不进行检测 客户端检测正确即可
-
+    static SendUseFreeTip = '0x010005';
+    static GetGuanKaAward = '0x010006';
+    
     static RequestWithDraw = '0x000801';// 申请提现
     static GetMoneyDetail = '0x000802';
 
     static cmd = {
         '0x000100': 'BackLogin',
         '0x000101': 'BackCyExplain',
+        '0x000102': 'UpdateLeftTiliSec',
         '0x000103': 'UserAttr',
         '0x000104': 'RankData',
         '0x000105': 'SendLeftTiliSec',//重置签到剩余秒数

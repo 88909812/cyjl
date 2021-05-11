@@ -48,8 +48,6 @@ export default class AppInit extends cc.Component {
 
             let domainConfig = new DomainGet();
             domainConfig.initDomain();
-
-            app.uiBaseEvent.emit('NetInit');
         });
 
         app.platform = PlatformManager.getIns();

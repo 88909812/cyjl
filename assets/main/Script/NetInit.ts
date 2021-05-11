@@ -32,7 +32,7 @@ export default class NetInit extends BaseNode {
     }
 
     init () {
-        let listeners = ['BackLogin','Logout','SendLvlExp','UserAttr','GuanKaInfoList' ];
+        let listeners = ['BackLogin','Logout','SendLvlExp','UserAttr','GuanKaInfoList','UpdateLeftTiliSec' ];
         this.register(listeners);
         //--------------------------------------------------  
 
@@ -136,7 +136,9 @@ export default class NetInit extends BaseNode {
 
             this.sendConnectData();
             this.reqGuanKaInfo();
-            
+            if (cc.director.getScene().name == 'LoadingScene') {
+                cc.director.loadScene('Hall'); 
+            }          
         }else{
             let tipStr = '';
             switch (res.code) {
@@ -263,12 +265,8 @@ export default class NetInit extends BaseNode {
     }
     reqGuanKaInfo(){
         if (!app.checkPointData.id||app.checkPointData.id<app.userData.lastGuanKa.main) {
-            let guankaIndex = 1;
-            if (app.userData.lastGuanKa && app.userData.lastGuanKa.main) {
-                guankaIndex = app.userData.lastGuanKa.main;
-            }
             let RequestGuanKaInfo = new app.PB.message.RequestGuanKaInfo();
-            RequestGuanKaInfo.startId = guankaIndex;
+            RequestGuanKaInfo.startId = app.userData.lastGuanKa.main;
             RequestGuanKaInfo.num = 1;
             let pack = new PackageBase(Message.RequestGuanKaInfo);
             pack.d(RequestGuanKaInfo).to(app.sever);
@@ -278,6 +276,11 @@ export default class NetInit extends BaseNode {
         console.log(res);
         app.checkPointData = res.list[0];
         cc.sys.localStorage.setItem('checkPointData', JSON.stringify(app.checkPointData));
+        app.uiViewEvent.emit('CheckPointInit');
+    }
+    UpdateLeftTiliSec(res){
+        console.log(res);
+        app.powerData = res;
     }
     // update (dt) {}
 }

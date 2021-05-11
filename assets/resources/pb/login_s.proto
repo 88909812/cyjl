@@ -108,8 +108,9 @@ message SendLvlExp {
     uint32 finalExp = 2; // 分子
     uint32 finalMaxExp = 3; // 分母
     bool lvlup = 4; //是否升级了
-    string currName = 5; //本级名称
-    string nextName = 6; //下级名称
+    bool biglvlup = 5; //是否大升级了
+    string currName = 6; //本级名称
+    string nextName = 7; //下级名称
 }
 
 

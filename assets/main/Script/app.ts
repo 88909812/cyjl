@@ -21,6 +21,7 @@ export module app{
     export let levelData:any = {};
     export let checkPointData:any = {};
     export let userConfig:any = {};
+    export let powerData:any = {};
 
     export let uiViewEvent = new cc.EventTarget();//UI消息，用这个派发
     export let uiBaseEvent = new cc.EventTarget();//底层（基本不会隐藏的）UI消息，用这个派发（主要用于scollEx消息的冲突）

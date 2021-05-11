@@ -651,7 +651,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 110.25,
+      "width": 114.68,
       "height": 58.4
     },
     "_anchorPoint": {
@@ -663,7 +663,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        -199.875,
+        -199.87500000000003,
         0,
         0,
         0,
@@ -703,8 +703,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "第1关",
-    "_N$string": "第1关",
+    "_string": "第X关",
+    "_N$string": "第X关",
     "_fontSize": 40,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -773,7 +773,7 @@
     "alignMode": 1,
     "_target": null,
     "_alignFlags": 8,
-    "_left": 120,
+    "_left": 117.785,
     "_right": 0,
     "_top": 0,
     "_bottom": 0,
@@ -2572,6 +2572,9 @@
     "_enabled": true,
     "checkpointLab": {
       "__id__": 14
+    },
+    "freeTipNum": {
+      "__id__": 48
     },
     "_id": "42oKP5PzpIu6Tftxk+SADc"
   },

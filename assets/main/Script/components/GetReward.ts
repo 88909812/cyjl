@@ -30,15 +30,15 @@ export default class GetReward extends BaseNode {
             if (!rewards || rewards.length === 0) {
                 return;
             }
-        }
-        else {
-            let ID = arguments[0]||0;
+        }else {
+            let name = arguments[0]||0;
             let count = arguments[1]||1;
             let reward = {
                 propCount: count,
-                propID:ID
+                propName:name
             }
             this.show([reward]);
+            return;
         }
 
         for (let index = 0; index < rewards.length; index++) {
@@ -46,7 +46,7 @@ export default class GetReward extends BaseNode {
             let itemNode = this.nodePool.get() || cc.instantiate(this.rewardItemPrefab);
             itemNode.parent = this.layer;
             let item = itemNode._components[0];
-            item.init(reward.propID, reward.propCount);
+            item.init(reward.propName, reward.propCount);
             
             cc.Tween.stopAllByTarget(itemNode);
             itemNode.opacity = 0;
@@ -71,18 +71,18 @@ export default class GetReward extends BaseNode {
      * 显示获得的金币
      * @param goldCount 金币数量
      */
-    showGold(goldCount) {
+    showLingshi(goldCount) {
         let reward = {
-            propID: 0,
+            propName: 'lingshi',
             propCount: goldCount,
             
         }
         this.show([reward]);
     }
 
-    showDiamond(count) {
+    showPower(count) {
         let reward = {
-            propID: 10,
+            propName: 'power',
             propCount: count,
         }
         this.show([reward]);

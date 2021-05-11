@@ -51,7 +51,9 @@ export default class LoadingScene extends cc.Component {
         }, (err, objects) => {
             if (err) {cc.error('LoadingScene::img error', err);}
             //this.loadPfb();
-            cc.director.loadScene('Hall');
+            if(this.tipLabel)this.tipLabel.string = '连接服务器中...';
+            app.uiBaseEvent.emit('NetInit');
+
         });
     }
     // loadPfb(){

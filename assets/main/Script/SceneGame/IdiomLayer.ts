@@ -16,30 +16,29 @@ export default class IdiomLayer extends BaseNode {
     cellPfb:cc.Prefab = null;
     nodePool:cc.NodePool = new cc.NodePool();
     idiomCells:IdiomCell[] = [];
+    isComplete = false;
     onLoad () {
         super.onLoad();
     }
     onEnable() {
         super.onEnable();
         this.onEventUI('onClickWord',(data)=>{
-            let isSuccess = false;
+            let idiomCell:IdiomCell = null;
             for (let index = 0; index < this.idiomCells.length; index++) {
-                const idiomCell = this.idiomCells[index];
+                idiomCell = this.idiomCells[index];
                 if (idiomCell.isSelect) {
                     idiomCell.setCell(data);
-                    isSuccess = true;
                     break;
                 }
             }
-            if (!isSuccess) {
+            if (!idiomCell) {//填入失败,返回这个字
                 app.uiViewEvent.emit('BackCell',data);
             }else{
-                for (let index = 0; index < this.idiomCells.length; index++) {
-                    const idiomCell = this.idiomCells[index];
-                    if (idiomCell.label.string == '') {
-                        idiomCell.setSelect();
-                        break;
-                    }
+                //填入成功后检测这个字是否能完成成语
+                let isComplete = idiomCell.judgeComplete();
+                //没有完成成语的话，直接跳到下一个空格
+                if (!isComplete) {
+                    this.jumpToNextGrid();
                 }
             }
             this.saveOperation();
@@ -56,7 +55,9 @@ export default class IdiomLayer extends BaseNode {
                 }
             }
             if (isRight) {
-                this.sendComplete(idiomCells);
+                this.sendCompleteIdiom(idiomCells);
+                //答对成语，直接跳到下一个空格
+                this.jumpToNextGrid();
             }else{
                 for (let index = 0; index < idiomCells.length; index++) {
                     const idiomCell = idiomCells[index];
@@ -68,7 +69,46 @@ export default class IdiomLayer extends BaseNode {
     onDisable(){
         super.onDisable();
     }
-    sendComplete(idiomCells){
+    init(cells,width,height){
+        this.clearAllNode();
+        this.isComplete = false;
+        console.log('cells==',cells);
+        for (let index = 0; index < cells.length; index++) {
+            const cell = cells[index];
+            let itemNode = this.nodePool.get()||cc.instantiate(this.cellPfb);
+            itemNode.parent = this.node;
+            let idiomCell = itemNode.getComponent(IdiomCell)
+            idiomCell.initCell(cell,width,height);
+            this.idiomCells.push(idiomCell);
+        }
+        //默认选择第一个空白元素
+        this.jumpToNextGrid();
+
+        if (width==8&&height==8) {
+            this.node.scale = Scale_8X8;
+        }else{
+            this.node.scale = Scale_9X9;
+        }
+    }
+
+    jumpToNextGrid(){
+        for (let index = 0; index < this.idiomCells.length; index++) {
+            const idiomCell = this.idiomCells[index];
+            if (idiomCell.label.string == '') {
+                idiomCell.setSelect();
+                break;
+            }
+        }
+    }
+    getSelectCell():IdiomCell{
+        for (let index = 0; index < this.idiomCells.length; index++) {
+            const idiomCell = this.idiomCells[index];
+            if (idiomCell.isSelect) {
+                return idiomCell;
+            }
+        }
+    }
+    sendCompleteIdiom(idiomCells){
         let idiom = '';
         for (let index = 0; index < idiomCells.length; index++) {
             const idiomCell:IdiomCell = idiomCells[index];
@@ -81,6 +121,38 @@ export default class IdiomLayer extends BaseNode {
         SendCyComplete.cy = idiom;
         let pack = new PackageBase(Message.SendCyComplete);
         pack.d(SendCyComplete).to(app.sever);
+
+        let idiomRewards = cc.Canvas.instance.getComponent(GameScene).data.cylist;
+        for (let index = 0; index < idiomRewards.length; index++) {
+            const idiomReward = idiomRewards[index];
+            if (idiomReward.str == idiom) {
+                app.uiManager.showUI('GetReward','lingshi',idiomReward.stone)
+            }
+        }
+        this.sendCompleteCheckPoint();
+    }
+    sendCompleteCheckPoint(){
+        if (this.isComplete) {
+            return;
+        }
+        this.isComplete = true;
+
+        let children: IdiomCell[] = this.node.getComponentsInChildren(IdiomCell);
+        for (let index = 0; index < children.length; index++) {
+            const idiomCell = children[index];
+            if (idiomCell.data.isBlank && idiomCell.data.state != CellStatus.Right) {
+                this.isComplete = false;
+                break;
+            }
+        }
+
+        if (this.isComplete) {
+            let SendGuanKaComplete = new app.PB.message.SendGuanKaComplete();
+            SendGuanKaComplete.identifier = cc.Canvas.instance.getComponent(GameScene).data.identifier;
+            let pack = new PackageBase(Message.SendGuanKaComplete);
+            pack.d(SendGuanKaComplete).to(app.sever); 
+        }
+        
     }
     saveOperation() {
         let children: IdiomCell[] = this.node.getComponentsInChildren(IdiomCell);
@@ -90,36 +162,6 @@ export default class IdiomLayer extends BaseNode {
         }
         app.checkPointData.data.selection = cc.Canvas.instance.getComponentInChildren(WordLayer).getWords();
         cc.sys.localStorage.setItem('checkPointData', JSON.stringify(app.checkPointData));
-    }
-    init(cells,width,height){
-        this.clearAllNode();
-        console.log('cells==',cells);
-        for (let index = 0; index < cells.length; index++) {
-            const cell = cells[index];
-            let itemNode = this.nodePool.get()||cc.instantiate(this.cellPfb);
-            itemNode.parent = this.node;
-            let idiomCell = itemNode.getComponent(IdiomCell)
-            idiomCell.initCell(cell,width,height);
-            this.idiomCells.push(idiomCell);
-        }
-        //默认选择第一个空白元素
-        for (let index = 0; index < cells.length; index++) {
-            const cell = cells[index];
-            if (cell.state) {//有本地记录的情况
-                if (cell.state == CellStatus.Empty) {
-                    this.idiomCells[index].setSelect();
-                    break;
-                }
-            }else if (cell.isBlank) {//无本地记录的情况
-                this.idiomCells[index].setSelect();
-                break;
-            }
-        }
-        if (width==8&&height==8) {
-            this.node.scale = Scale_8X8;
-        }else{
-            this.node.scale = Scale_9X9;
-        }
     }
 
     clearAllNode(){
