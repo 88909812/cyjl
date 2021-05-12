@@ -59,6 +59,8 @@ export default class IdiomCell extends BaseNode {
 
         this.node.x = this.orginPos.x;
         this.node.y = this.orginPos.y;
+        this.node.angle = 0;
+        this.node.scale = 1;
 
         if (cell.state) {//发现用户的操作记录
             this.label.string = cell.write;
@@ -123,14 +125,14 @@ export default class IdiomCell extends BaseNode {
                     this.cell.spriteFrame = this.wrongFrame;
                 }
                 if (isPlay) {
-                    cc.Tween.stopAllByTarget(this.node);
-                    cc.tween(this.node).set({ angle: 0 })
-                        .to(0.1, { angle: 10 })
-                        .to(0.2, { angle: -10 })
-                        .to(0.2, { angle: 10 })
-                        .to(0.2, { angle: -10 })
-                        .to(0.1, { angle: 0 }, { easing: 'backOut' })
-                        .start();
+                    let wrongAni = cc.tween(this.node).set({ angle: 0 })
+                    .to(0.1, { angle: 10 })
+                    .to(0.2, { angle: -10 })
+                    .to(0.2, { angle: 10 })
+                    .to(0.2, { angle: -10 })
+                    .to(0.1, { angle: 0 }, { easing: 'backOut' })
+                    .start();
+                    cc.tween(this.node).then(wrongAni);
                 }
                 
                 break;
@@ -139,12 +141,12 @@ export default class IdiomCell extends BaseNode {
                 this.setSelect(false);
                 this.data.state = state;
                 if (isPlay) {
-                    cc.Tween.stopAllByTarget(this.node);
-                    cc.tween(this.node).set({ scale: 1 })
+                    let rightAni = cc.tween(this.node).set({ scale: 1 })
                         .delay(delay)
                         .to(0.2, { scale: 1.2 })
                         .to(0.1, { scale: 1 }, { easing: 'backOut' })
                         .start();
+                    cc.tween(this.node).then(rightAni);
                 }
                 break;
             case CellStatus.Empty:
@@ -158,7 +160,7 @@ export default class IdiomCell extends BaseNode {
                 this.data.state = state;
                 break;
             case CellStatus.Normal:
-            default: 
+            default:
                 this.cell.spriteFrame = this.normalFrame;
                 this.data.state = state;
                 break;

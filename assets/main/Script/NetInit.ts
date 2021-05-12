@@ -23,6 +23,9 @@ export default class NetInit extends BaseNode {
         this.onEventUI('onResume',()=>{
             this.sendHeartBeat();
         },'uiBaseEvent');
+        this.onEventUI('reqGuanKaInfo',()=>{
+            this.reqGuanKaInfo();
+        },'uiBaseEvent');
     }
     onDisable(){
         //重载，防止监听函数消失
@@ -131,6 +134,7 @@ export default class NetInit extends BaseNode {
         app.waitingPanel.hide();
         if (res.code == 0) {
             app.userData = res;
+            app.oldRoleData = Math.ceil(app.userData.data.lvl/10);
             app.uiViewEvent.emit('UpdateUserInfo');
             cc.sys.localStorage.setItem('idomLoginParam', JSON.stringify(app.loginParam));
 
@@ -260,11 +264,14 @@ export default class NetInit extends BaseNode {
     }
     SendLvlExp(res){
         console.log('SendLvlExp',res)
+        if (res.lvlup) {
+            app.oldLevelData.push(res);
+        }
         app.levelData = res;
         app.uiViewEvent.emit('UpdateLevelInfo');
     }
     reqGuanKaInfo(){
-        if (!app.checkPointData.id||app.checkPointData.id<app.userData.lastGuanKa.main) {
+        if (!app.checkPointData.id||app.checkPointData.id!=app.userData.lastGuanKa.main) {
             let RequestGuanKaInfo = new app.PB.message.RequestGuanKaInfo();
             RequestGuanKaInfo.startId = app.userData.lastGuanKa.main;
             RequestGuanKaInfo.num = 1;

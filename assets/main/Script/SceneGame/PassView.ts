@@ -39,6 +39,7 @@ export default class PassView extends BaseView {
         super.onDisable();
     }
     show(res,identifier){
+        this.clearAllNode();
         this.data = res;
         app.userData.lastGuanKa = this.data.guanka;
         this.checkpoint.string = '第'+app.checkPointData.id+'关';
@@ -51,17 +52,23 @@ export default class PassView extends BaseView {
             idiomExplain.init(cell);
         }
 
-        app.uiManager.showUI('PassRewardPanel',res.exp,identifier);
+        this.scheduleOnce(()=>{
+            app.uiManager.showUI('PassRewardPanel',res.exp,identifier);
+        },0.3);
+    }
+    clearAllNode(){
+        let children:IdiomExplain[] = this.layer.getComponentsInChildren(IdiomExplain);
+        for(let i = children.length - 1; i >= 0; i--) {
+            let node = children[i].node;
+            this.nodePool.put(node);
+        }
     }
     BackCyExplain(res:{pinyin:string[],explain:string,source:string}){
         app.uiManager.showUI('ExplainPanel',res,this.curIdiom)
     }
     onClickNextCheckpoint(event:cc.Button){
-        let RequestGuanKaInfo = new app.PB.message.RequestGuanKaInfo();
-        RequestGuanKaInfo.startId = this.data.guanka.main;
-        RequestGuanKaInfo.num = 1;
-        let pack = new PackageBase(Message.RequestGuanKaInfo);
-        pack.d(RequestGuanKaInfo).to(app.sever);
+        app.uiBaseEvent.emit('reqGuanKaInfo');
+        this.onClickClose();
     }
     onClickReturn(event:cc.Button){
         cc.director.loadScene('Hall');

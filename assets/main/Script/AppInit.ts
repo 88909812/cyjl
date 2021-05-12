@@ -29,10 +29,13 @@ export default class AppInit extends cc.Component {
         }
 
         app.loginParam = {};
-        let loginParamStr = cc.sys.localStorage.getItem('idomLoginParam');
-        if (loginParamStr) {
-            app.loginParam = JSON.parse(loginParamStr);
+        if (!cc.sys.isBrowser) {
+            let loginParamStr = cc.sys.localStorage.getItem('idomLoginParam');
+            if (loginParamStr) {
+                app.loginParam = JSON.parse(loginParamStr);
+            }
         }
+        
 
         //读取本地关卡数据
         app.checkPointData = {};

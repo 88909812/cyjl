@@ -4,10 +4,10 @@ import BaseNode from "../Script/base/BaseNode";
 const {ccclass, property} = cc._decorator;
 @ccclass
 export default class IdiomExplain extends BaseNode {
+    @property(cc.Label)
     idiomLab:cc.Label = null;
     onLoad () {
         super.onLoad();
-        this.idiomLab = this.getComponentInChildren(cc.Label);
     }
     onEnable() {
         super.onEnable();

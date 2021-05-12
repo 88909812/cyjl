@@ -21,11 +21,11 @@ export default class RoleUpgrade extends BaseNode {
     onDisable(){
         super.onDisable();
     }
-    show(oldLevel,newLevel=null){
+    show(oldRoleData,newRoleData=null){
         this.light.active = false;
         let armatureOld =  this.oldRole.getComponentInChildren(dragonBones.ArmatureDisplay);
-        cc.resources.load('bones/Step'+ oldLevel + '_ske', dragonBones.DragonBonesAsset, (err, bone:dragonBones.DragonBonesAsset) => {
-            cc.resources.load('bones/Step' + oldLevel + '_tex', dragonBones.DragonBonesAtlasAsset, (err, asset:dragonBones.DragonBonesAtlasAsset) => {
+        cc.resources.load('bones/Step'+ (oldRoleData+1) + '_ske', dragonBones.DragonBonesAsset, (err, bone:dragonBones.DragonBonesAsset) => {
+            cc.resources.load('bones/Step' + (oldRoleData+1)  + '_tex', dragonBones.DragonBonesAtlasAsset, (err, asset:dragonBones.DragonBonesAtlasAsset) => {
                 armatureOld.dragonAsset = bone;
                 armatureOld.dragonAtlasAsset = asset;
                 armatureOld.armatureName = 'Armature';
@@ -33,17 +33,17 @@ export default class RoleUpgrade extends BaseNode {
             });
         });
 
-        if (newLevel != null) {
+        if (newRoleData != null) {
             let armatureNew = this.newRole.getComponentInChildren(dragonBones.ArmatureDisplay);
-            cc.resources.load('bones/Step' + newLevel + '_ske', dragonBones.DragonBonesAsset, (err, bone: dragonBones.DragonBonesAsset) => {
-                cc.resources.load('bones/Step' + newLevel + '_tex', dragonBones.DragonBonesAtlasAsset, (err, asset: dragonBones.DragonBonesAtlasAsset) => {
+            cc.resources.load('bones/Step' + (newRoleData+1)  + '_ske', dragonBones.DragonBonesAsset, (err, bone: dragonBones.DragonBonesAsset) => {
+                cc.resources.load('bones/Step' + (newRoleData+1) + '_tex', dragonBones.DragonBonesAtlasAsset, (err, asset: dragonBones.DragonBonesAtlasAsset) => {
                     armatureNew.dragonAsset = bone;
                     armatureNew.dragonAtlasAsset = asset;
                     armatureNew.armatureName = 'Armature';
                     armatureNew.playAnimation('newAnimation', 0);
                 });
             });
-
+            app.oldRoleData++;
             this.playAni();
         }
     }

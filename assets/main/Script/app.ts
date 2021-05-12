@@ -19,6 +19,8 @@ export module app{
     export let loginData = null;
     export let userData:any = {};
     export let levelData:any = {};
+    export let oldRoleData:any = null;
+    export let oldLevelData:any[] = [];
     export let checkPointData:any = {};
     export let userConfig:any = {};
     export let powerData:any = {};

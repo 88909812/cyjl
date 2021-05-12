@@ -9,13 +9,11 @@ export default class Hall extends BaseNode {
         super.onLoad();
     }
     start(){
-
-
-        
+        app.uiBaseEvent.emit('reqGuanKaInfo');
     }
     onEnable() {
         super.onEnable();
-
+        
     }
     onDisable(){
         super.onDisable();

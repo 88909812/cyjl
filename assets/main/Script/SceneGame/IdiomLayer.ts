@@ -147,10 +147,13 @@ export default class IdiomLayer extends BaseNode {
         }
 
         if (this.isComplete) {
-            let SendGuanKaComplete = new app.PB.message.SendGuanKaComplete();
-            SendGuanKaComplete.identifier = cc.Canvas.instance.getComponent(GameScene).data.identifier;
-            let pack = new PackageBase(Message.SendGuanKaComplete);
-            pack.d(SendGuanKaComplete).to(app.sever); 
+            //如果完成的话，延时发送成功消息，让动画播放完
+            this.scheduleOnce(() => {
+                let SendGuanKaComplete = new app.PB.message.SendGuanKaComplete();
+                SendGuanKaComplete.identifier = cc.Canvas.instance.getComponent(GameScene).data.identifier;
+                let pack = new PackageBase(Message.SendGuanKaComplete);
+                pack.d(SendGuanKaComplete).to(app.sever);
+            }, 1.2);
         }
         
     }

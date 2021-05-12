@@ -22,7 +22,7 @@ export default class ProgressAni extends BaseNode {
         }
     }
 
-    initProgress(percent:number = 0,totalNum:number = 0){
+    initProgress(percent:number = 0,totalNum:number = 0,runtime = 2){
         this.percent = percent;
         this.curProgress = this.percent;
         this.getComponent(cc.ProgressBar).progress = this.curProgress;
@@ -31,16 +31,18 @@ export default class ProgressAni extends BaseNode {
         if (this.desLabel) {
             this.desLabel.string = ''+ Math.floor(this.totalNum*this.curProgress);
         }
+
+        this.cellProgress = 1/runtime;
     }
-    progressTo(percent: number,totalNum:number = 0,runtime = 0.5,callback = null) {
+    progressTo(percent: number,callback = null) {
         this.callback = callback;
         this.curProgress = this.percent;
         this.percent = percent;
-        this.totalNum = totalNum;
 
         this.isAniPlaying = true;
         this.isUp = this.percent >= this.curProgress;
-        this.cellProgress = Math.abs(this.percent - this.curProgress)/runtime;
+        //目前采用总进度多少秒的形式，废弃固定时间固定进度的形式
+        //this.cellProgress = Math.abs(this.percent - this.curProgress)/runtime;
     }
     update (dt:number) {
         if (this.isAniPlaying) {
