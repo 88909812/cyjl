@@ -42,6 +42,10 @@ export default class HallUI extends BaseNode {
         }
     }
     onClickStartGame(event:cc.Button){
+        if (!app.checkPointData) {
+            app.uiManager.showUI('MessageNode','关卡信息获取失败！请重新登录！');
+            return;
+        }
         cc.director.loadScene('GameScene');
     }
     

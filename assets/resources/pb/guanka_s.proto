@@ -1,6 +1,6 @@
 syntax = "proto3";
 package message;
-
+import "message.proto";
 
 message GuanKaInfo {
     uint32 id = 1;   //此处代表管卡内容Id, 不是管卡Id , 多个管卡可以使用多个管卡内容Id 客户端忽略此字段
@@ -66,6 +66,7 @@ message BackGuanKaComplete {
     uint32 stone = 4;  // 完成此关获取的灵石奖励
     uint32 tili = 5;  // 完成此关获取的体力奖励
     uint32 exp = 6;  // 完成此关获取的修为奖励
+    GuanKaIng guanka = 7; // 更新关卡id
 }
 
 //0x010004 通关奖励领取 (普通领取和视频领取) 领取成功后会立即发送0x000106协议

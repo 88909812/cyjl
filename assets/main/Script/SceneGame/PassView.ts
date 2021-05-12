@@ -14,6 +14,8 @@ export default class PassView extends BaseView {
     @property(cc.Label)
     checkpoint:cc.Label = null;
     curIdiom = '';
+
+    data = null;
     onLoad () {
         super.onLoad();
     }
@@ -36,7 +38,9 @@ export default class PassView extends BaseView {
     onDisable(){
         super.onDisable();
     }
-    show(){
+    show(res,identifier){
+        this.data = res;
+        app.userData.lastGuanKa = this.data.guanka;
         this.checkpoint.string = '第'+app.checkPointData.id+'关';
         let cells = app.checkPointData.data.cy;
         for (let index = 0; index < cells.length; index++) {
@@ -46,13 +50,15 @@ export default class PassView extends BaseView {
             let idiomExplain = itemNode.getComponent(IdiomExplain)
             idiomExplain.init(cell);
         }
+
+        app.uiManager.showUI('PassRewardPanel',res.exp,identifier);
     }
     BackCyExplain(res:{pinyin:string[],explain:string,source:string}){
         app.uiManager.showUI('ExplainPanel',res,this.curIdiom)
     }
     onClickNextCheckpoint(event:cc.Button){
         let RequestGuanKaInfo = new app.PB.message.RequestGuanKaInfo();
-        RequestGuanKaInfo.startId = app.checkPointData.id+1;
+        RequestGuanKaInfo.startId = this.data.guanka.main;
         RequestGuanKaInfo.num = 1;
         let pack = new PackageBase(Message.RequestGuanKaInfo);
         pack.d(RequestGuanKaInfo).to(app.sever);

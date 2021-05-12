@@ -97,10 +97,41 @@ export default class GameScene extends BaseNode {
             });
             return;
         }
-        app.uiManager.showUI('PassView');
+        app.uiManager.showUI('PassView',res,this.data.identifier);
     }
     BackGetGuanKaAward(res){
         console.log(res);
+        if (res.code!=app.PB.message.BackGetGuanKaAward.RetCode.RC_OK) {
+            let msg = '';
+            switch (res.code) {
+                case app.PB.message.BackGetGuanKaAward.RetCode.RC_WRONG_ID:
+                    msg = '错误的关卡';
+                    break;
+                case app.PB.message.BackGetGuanKaAward.RetCode.RC_WRONG_IDENTIFIER:
+                    msg = '错误的标识';
+                    break;
+                case app.PB.message.BackGetGuanKaAward.RetCode.RC_ALREADY_REWARD:
+                    msg = '重复领取';
+                    break;
+                default:
+                    msg = '未知错误';
+                    break;
+            }
+            if (res.msg && res.msg.length > 0) {
+                msg = msg + ':' + res.msg;
+            }
+            app.uiManager.showUI('MessageNode', msg);
+            return;
+        }
+        if (res.stone>0) {
+            app.uiManager.showUI('GetReward','stone',res.stone)
+        }
+        if (res.tili>0) {
+            app.uiManager.showUI('GetReward','tili',res.tili)
+        }
+        if (res.exp>0) {
+            app.uiManager.showUI('GetReward','exp',res.exp)
+        }
     }
     SendReachEnd(res){
         console.log(res);

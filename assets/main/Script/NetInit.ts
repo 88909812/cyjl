@@ -275,7 +275,12 @@ export default class NetInit extends BaseNode {
     GuanKaInfoList(res){
         console.log(res);
         app.checkPointData = res.list[0];
-        cc.sys.localStorage.setItem('checkPointData', JSON.stringify(app.checkPointData));
+        if (app.checkPointData) {
+            cc.sys.localStorage.setItem('checkPointData', JSON.stringify(app.checkPointData));
+        }else{
+            cc.sys.localStorage.setItem('checkPointData', '');
+        }
+        
         app.uiViewEvent.emit('CheckPointInit');
     }
     UpdateLeftTiliSec(res){

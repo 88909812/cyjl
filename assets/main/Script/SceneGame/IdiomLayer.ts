@@ -126,7 +126,7 @@ export default class IdiomLayer extends BaseNode {
         for (let index = 0; index < idiomRewards.length; index++) {
             const idiomReward = idiomRewards[index];
             if (idiomReward.str == idiom) {
-                app.uiManager.showUI('GetReward','lingshi',idiomReward.stone)
+                app.uiManager.showUI('GetReward','stone',idiomReward.stone)
             }
         }
         this.sendCompleteCheckPoint();
