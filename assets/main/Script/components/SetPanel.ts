@@ -12,6 +12,7 @@ export default class SetPanel extends BasePanel {
     }
     onClickCurtain(){
         //cc.log('如果需要添加点击幕布时的操作，你可以选择重载onClickCurtain');
+        this.onClickClose();
     }
     onEnable() {
         super.onEnable();

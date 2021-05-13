@@ -89,13 +89,13 @@ export default class HallUI extends BaseNode {
         app.uiManager.showUI('SetPanel');
     }
     onClickRank(event:cc.Button){
-
-    }
+        app.uiManager.showUI('RankPanel');
+    }   
     
-    onClickAddLingshi(event:cc.Button){
-
+    onClickExchangeStone(event:cc.Button){
+        app.uiManager.showUI('StoneExchangePanel');
     }
     onClickAddPower(event:cc.Button){
-        
+        app.uiManager.showUI('TiliPanel');
     }
 }

@@ -66,11 +66,21 @@ message GetCyExplain {
 	string cy = 1;
 }
 
+// 0x000109 前端行为通知
+message ClientTell {
+    int64 targetUserId = 1; // 目标用户 0 则代表自己
+    string tag = 2; // tag = "share" 分享  invite 邀请 favorite 收藏
+}
+
 //0x00010A 根据key获取用户数据
 message GetPlayerValueByKey {
     string key = 1;
 }
 
+// 0x00010B 获取邀请或分享列表
+message GetInviteShare {
+     string tag = 1;  // tag = "share" 分享  invite 邀请
+}
 
 //0x000110 开始观看视频
 message StartVideo {

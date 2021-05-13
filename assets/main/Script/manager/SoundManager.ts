@@ -42,13 +42,7 @@ export default class SoundManager {
         });
     }
 
-    playGameLose(){
-        cc.resources.load('sounds/gameFail', cc.AudioClip, (err, clip:cc.AudioClip)=> {
-            if (err) {cc.log(err);return;}
-            cc.audioEngine.playEffect(clip, false);
-        });
-    }
-    playGameWin(){
+    playGamePass(){
         cc.resources.load('sounds/gamePass', cc.AudioClip, (err, clip:cc.AudioClip)=> {
             if (err) {cc.log(err);return;}
             cc.audioEngine.playEffect(clip, false);
@@ -60,8 +54,20 @@ export default class SoundManager {
             cc.audioEngine.playEffect(clip, false);
         });
     }
-    playBossComming(){
-        cc.resources.load('sounds/bossCome', cc.AudioClip, (err, clip:cc.AudioClip)=> {
+    playRight(){
+        cc.resources.load('sounds/right', cc.AudioClip, (err, clip:cc.AudioClip)=> {
+            if (err) {cc.log(err);return;}
+            cc.audioEngine.playEffect(clip, false);
+        });
+    }
+    playWrong(){
+        cc.resources.load('sounds/wrong', cc.AudioClip, (err, clip:cc.AudioClip)=> {
+            if (err) {cc.log(err);return;}
+            cc.audioEngine.playEffect(clip, false);
+        });
+    }
+    playClick(){
+        cc.resources.load('sounds/click', cc.AudioClip, (err, clip:cc.AudioClip)=> {
             if (err) {cc.log(err);return;}
             cc.audioEngine.playEffect(clip, false);
         });

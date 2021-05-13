@@ -135,6 +135,17 @@ message BackGetSign {
     uint32 tili = 4; //体力
 }
 
+// 0x000109 每日0点清空重置
+message SendInviteShare {
+    message Data
+    {
+        uint32 index = 1;
+        string name = 2;
+        string avatar = 3; 
+        uint32 tili = 4;
+    }
+    repeated Data list = 1;
+}
 
 // 0x00010A 用户数据(根据key)
 // key = 内容的全拼音
