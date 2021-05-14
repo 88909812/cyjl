@@ -40,8 +40,11 @@ export default class RankItem extends BaseNode {
             imgNode.active = false;
         })
         this.rankNum.node.active = false;
-        if (num<=3) {
+        if (num==1||num==2||num==3) {
             this.rankImg.getChildByName(num+'').active = true;
+        }else if (num==0) {
+            this.rankNum.string = '无';
+            this.rankNum.node.active = true;
         }else{
             this.rankNum.string = num+'';
             this.rankNum.node.active = true;

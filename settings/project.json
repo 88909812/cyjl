@@ -7,7 +7,6 @@
   "excluded-modules": [
     "Collider",
     "Dynamic Atlas",
-    "DragonBones",
     "Intersection",
     "Physics",
     "PageView",
@@ -38,10 +37,10 @@
   "simulator-orientation": false,
   "use-customize-simulator": true,
   "simulator-resolution": {
-    "height": 1334,
-    "width": 750
+    "width": 750,
+    "height": 1334
   },
-  "last-module-event-record-time": 1618194772416,
+  "last-module-event-record-time": 1620973139999,
   "assets-sort-type": "name",
   "facebook": {
     "appID": "",

@@ -44,6 +44,7 @@ export default class RankPanel extends BasePanel {
         
     }
     RankData(res){
+        console.log('RankData--',res);
         this.rankList.addDatas(res.list);
         let data = {
             rank: res.myRank,

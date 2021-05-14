@@ -553,7 +553,7 @@
     "asset": {
       "__uuid__": "19a7e766-45fa-4b76-a148-71606c917898"
     },
-    "fileId": "37Wd6KWRZCSat5T2ch8uk0",
+    "fileId": "f2sWGfkNND26OVb+BiPFoH",
     "sync": false
   },
   {
@@ -662,7 +662,7 @@
     "asset": {
       "__uuid__": "19a7e766-45fa-4b76-a148-71606c917898"
     },
-    "fileId": "1fTTh1IfVNt4oBEgAJgHlv",
+    "fileId": "bbrBcJhKFBOI+yrO8p87gj",
     "sync": false
   },
   {
@@ -1271,9 +1271,9 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
-      "__uuid__": "0d877912-fe63-4db9-91b2-e02f7131baa3"
+      "__uuid__": "35aed443-9db2-4067-86a0-6a0389dd8c36"
     },
-    "_type": 0,
+    "_type": 1,
     "_sizeMode": 0,
     "_fillType": 0,
     "_fillCenter": {

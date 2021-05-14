@@ -47,14 +47,45 @@ export default class NetInit extends BaseNode {
         }
         if (CC_PREVIEW||cc.sys.isBrowser) {
             app.loginParam.accountID = app.loginParam.accountID || this.accountID;
-            this.connectSever();
-        }else{
-            
         }
-        
+        this.connectSever();
         this.schedule(this.sendHeartBeat, 10);
     }
-    
+    connectSever(){
+        app.sever.close();
+
+        if (!app.ipConfig.ipArr || app.ipConfig.ipArr.length <= this.ipIndex) {
+            let args = {
+                isConfirm: true,
+                content: '服务器维护中，请稍后再试...'
+            }
+            app.uiManager.showUI('TipPanel', args, () => {
+                this.ipIndex = 0;
+                this.connectSever();
+            });
+            return;
+        }
+        
+        let ipCur = app.ipConfig.ipArr[this.ipIndex];
+        
+        app.sever.setServerInfo({ip:ipCur,port:31700});
+        app.sever.connect(() => {
+            cc.log('connect success');
+            app.waitingPanel.hide();
+
+            if (CC_PREVIEW||cc.sys.isBrowser) {
+                this.sendVisitorLogin();
+            }else{
+                this.sendWechatLogin(); 
+            }
+        });
+        app.waitingPanel.show(5,()=>{
+            this.sendLoginFail();
+            this.ipIndex++;
+            this.connectSever();
+        });
+    }
+
     sendHeartBeat() {
         if (app.sever && app.sever.isNetOK()) {
             let HeartBeat = new app.PB.message.HeartBeat();
@@ -92,39 +123,6 @@ export default class NetInit extends BaseNode {
         }
         app.uiManager.showUI('TipPanel', { content: msg, isConfirm: true },()=>{
             cc.game.end();
-        });
-    }
-    connectSever(){
-        app.sever.close();
-
-        if (!app.ipConfig.ipArr || app.ipConfig.ipArr.length <= this.ipIndex) {
-            let args = {
-                isConfirm: true,
-                content: '服务器维护中，请稍后再试...'
-            }
-            app.uiManager.showUI('TipPanel', args, () => {
-                this.ipIndex = 0;
-                this.connectSever();
-            });
-            return;
-        }
-
-        let ipCur = app.ipConfig.ipArr[this.ipIndex];
-        app.sever.setServerInfo({ip:ipCur,port:31700});
-        app.sever.connect(() => {
-            cc.log('connect success');
-            app.waitingPanel.hide();
-
-            if (CC_PREVIEW||cc.sys.isBrowser) {
-                this.sendVisitorLogin();
-            }else{
-                this.sendWechatLogin(); 
-            }
-        });
-        app.waitingPanel.show(5,()=>{
-            this.sendLoginFail();
-            this.ipIndex++;
-            this.connectSever();
         });
     }
 
@@ -220,18 +218,32 @@ export default class NetInit extends BaseNode {
             });
             this.sendLoginFail(app.NetError.LoginOutTime,app.loginParam.session);
         });
+        wx.login({
+            success: (res) => {
+                app.waitingPanel.hide()
+                console.log('wx.login---success!!!', res);
 
-        let Login = new PB.message.Login();
-        Login.uuid = app.platform.getIMEI();
-        Login.BuildNo = app.versionCode;
-        Login.session = app.loginParam.session;
-        Login.os = cc.sys.os + '_' + app.versionCode;
-        Login.device = app.platform.getPhoneType();
-        Login.group = app.channelConfig.group;
-        let pack = new PackageBase(Message.Login);
-        pack.d(Login).to(app.sever);
+                let Login = new PB.message.Login();
+                Login.BuildNo = app.versionCode;
+                Login.Env = 'mp';
+                Login.EnterComplete = true;
+                Login.tick = new Date().getTime();
+                Login.content = res.code;
+                Login.ip = app.clientIP;
+                Login.os = cc.sys.os + '_' + app.versionCode;
+                Login.device = app.platform.getPhoneType();
+                Login.group = app.channelConfig.group;
+                let pack = new PackageBase(Message.Login);
+                pack.d(Login).to(app.sever);
 
-        app.loginData = Login;
+                app.loginData = Login;
+            },
+            fail: (res) => {
+                app.waitingPanel.hide()
+                console.log('wx.login---fail!!!', res);
+            }
+        });
+        
     }
 
     

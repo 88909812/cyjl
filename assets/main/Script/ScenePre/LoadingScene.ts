@@ -50,24 +50,22 @@ export default class LoadingScene extends cc.Component {
             if(this.progressbar)this.progressbar.progress = progress;
         }, (err, objects) => {
             if (err) {cc.error('LoadingScene::img error', err);}
-            //this.loadPfb();
-            if(this.tipLabel)this.tipLabel.string = '连接服务器中...';
-            app.uiBaseEvent.emit('NetInit');
-
+            this.loadPfb();
         });
     }
-    // loadPfb(){
-    //     cc.resources.loadDir('prefabs',cc.Prefab, (completedCount, totalCount, item) => {
-    //         let progress = Number((SoundProgress + (completedCount / totalCount) * (PfbProgress - SoundProgress)).toFixed(2));
-    //         if (progress>PfbProgress) {
-    //             if(this.tipLabel)this.tipLabel.string = '加载资源中：' + Math.ceil(progress * 100) + '%';
-    //             if(this.progressbar)this.progressbar.progress = progress;
-    //         }
-    //     }, (err, objects) => {
-    //         if (err) {cc.error('LoadingScene::img error', err);}
-    //         cc.director.loadScene('GameScene');
-    //     });
-    // }
+    loadPfb(){
+        cc.resources.loadDir('prefabs',cc.Prefab, (completedCount, totalCount, item) => {
+            let progress = Number((SoundProgress + (completedCount / totalCount) * (PfbProgress - SoundProgress)).toFixed(2));
+            if (progress>PfbProgress) {
+                if(this.tipLabel)this.tipLabel.string = '加载资源中：' + Math.ceil(progress * 100) + '%';
+                if(this.progressbar)this.progressbar.progress = progress;
+            }
+        }, (err, objects) => {
+            if (err) {cc.error('LoadingScene::img error', err);}
+            if(this.tipLabel)this.tipLabel.string = '连接服务器中...';
+            app.uiBaseEvent.emit('NetInit');
+        });
+    }
     // update (dt) {}
 }
 

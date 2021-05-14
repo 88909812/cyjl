@@ -26,7 +26,7 @@ export class SocketServer extends Server {
         }else{
             url = "ws://" + this.serverInfo.ip + ":" + this.serverInfo.port+'/niu';
         }
-        
+        console.log('url=====',url);
         this.socket = new WebSocket(url);
         this.socket.binaryType 	= "arraybuffer";
         this.socket.onopen 		= this.onOpen.bind(this);					// 建立socket连接成功后的回调
@@ -34,6 +34,8 @@ export class SocketServer extends Server {
 		this.socket.onmessage 	= this.onMessage.bind(this);				// 收到消息时候的回调
         this.socket.onclose 	= this.onClose.bind(this);					// 关闭socket时候的回调
         this.connectSuccessCallback = listener;
+
+        console.log('this.socket=====',this.socket);
     }
     onOpen() {
 		if(this.connectSuccessCallback) {
