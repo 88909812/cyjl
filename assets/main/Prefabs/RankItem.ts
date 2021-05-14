@@ -29,7 +29,11 @@ export default class RankItem extends BaseNode {
         super.onDisable();
     }
     init(data){
-        this.setRank(1);
+        this.setRank(data.rank);
+        this.levelName.string = data.lvlName;
+        this.playerName.string = data.name;
+        this.checkpoint.string = '第'+data.guanKa+'关';
+        this.avatar.init(data.avatar);
     }
     setRank(num){
         this.rankImg.children.forEach((imgNode)=>{

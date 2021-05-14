@@ -83,10 +83,11 @@ message RankData
 		int64 userId = 2;
         string name = 3;
 		uint32 lvl = 4;
-		string avatar = 5; //长度小于5为系统头像 否则为url
-		uint32 stone = 6;
-        uint32 exp = 7;
-		uint32 guanKa = 8;
+        string lvlName = 5;
+		string avatar = 6; //长度小于5为系统头像 否则为url
+		uint32 stone = 7;
+        uint32 exp = 8;
+		uint32 guanKa = 9;
 	}
 	int32 pageCount = 1;
     int32 pageIndex = 2;

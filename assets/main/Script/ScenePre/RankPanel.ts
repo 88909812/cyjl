@@ -1,4 +1,5 @@
 import RankItem from '../../Prefabs/RankItem';
+import { app } from '../app';
 import BasePanel from '../base/BasePanel';
 import ScrollPiecewise from '../components/ScrollPiecewise';
 import { Message } from '../net/NetDefine';
@@ -18,14 +19,39 @@ export default class RankPanel extends BasePanel {
     }
     onEnable() {
         super.onEnable();
+        let listeners=['RankData'];
+        this.register(listeners);
+        this.onEventUI('ReqNewData',()=>{
+            this.reqNewData();
+        });
     }
     onDisable(){
         super.onDisable();
     }
     show(){
-        
+        this.rankList.clearAllItem();
+        this.reqNewData();
+    }
+
+    reqNewData(){
+        let msg = new app.PB.message.GetRankData();
+        msg.pageIndex = this.rankList.curPageIndex;
+        msg.pageSize = this.rankList.maxReqCount;
+        let pack = new PackageBase(Message.GetRankData);
+        pack.d(msg).to(app.sever);
     }
     onClickShare(event:cc.Button){
         
+    }
+    RankData(res){
+        this.rankList.addDatas(res.list);
+        let data = {
+            rank: res.myRank,
+            lvlName: app.levelData.currName,
+            name: app.userData.data.name,
+            guanKa: res.myRank,
+            avatar: app.userData.data.avatar
+        };
+        this.selfItem.init(data);
     }
 }
