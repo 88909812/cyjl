@@ -78,7 +78,13 @@ export default class NetInit extends BaseNode {
             }else{
                 this.sendWechatLogin(); 
             }
+        },(err)=>{
+            app.waitingPanel.hide();
+            this.sendLoginFail();
+            this.ipIndex++;
+            this.connectSever();
         });
+        //创建链接超时处理
         app.waitingPanel.show(5,()=>{
             this.sendLoginFail();
             this.ipIndex++;

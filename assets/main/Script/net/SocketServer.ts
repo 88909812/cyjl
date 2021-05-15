@@ -3,7 +3,8 @@ import { Server } from "./ServerBase";
 export class SocketServer extends Server {
     private socket: WebSocket;
 
-    connectSuccessCallback: Function;
+    successCb: Function;
+    errorCb: Function;
 
     close() {
         if (this.socket) {
@@ -19,13 +20,22 @@ export class SocketServer extends Server {
     /**
      * 连接服务器
      */
-    connect(listener?: Function): void {
+    connect(listener?: Function,errorCb?:Function): void {
         let url
-        if (this.serverInfo.ip.indexOf(":") != -1 ) {
-            url = "ws://" + this.serverInfo.ip +'/niu';
+        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
+            if (this.serverInfo.ip.indexOf(":") != -1 ) {
+                url = "wss://" + this.serverInfo.ip;
+            }else{
+                url = "wss://" + this.serverInfo.ip + ":" + this.serverInfo.port;
+            }
         }else{
-            url = "ws://" + this.serverInfo.ip + ":" + this.serverInfo.port+'/niu';
+            if (this.serverInfo.ip.indexOf(":") != -1 ) {
+                url = "ws://" + this.serverInfo.ip;
+            }else{
+                url = "ws://" + this.serverInfo.ip + ":" + this.serverInfo.port;
+            }
         }
+        
         console.log('url=====',url);
         this.socket = new WebSocket(url);
         this.socket.binaryType 	= "arraybuffer";
@@ -33,26 +43,30 @@ export class SocketServer extends Server {
 		this.socket.onerror 	= this.onError.bind(this); 	// 建立socket之前发生错误的回调
 		this.socket.onmessage 	= this.onMessage.bind(this);				// 收到消息时候的回调
         this.socket.onclose 	= this.onClose.bind(this);					// 关闭socket时候的回调
-        this.connectSuccessCallback = listener;
-
-        console.log('this.socket=====',this.socket);
+        this.successCb = listener;
+        this.errorCb = errorCb;
+        //console.log('this.socket=====',this.socket);
     }
     onOpen() {
-		if(this.connectSuccessCallback) {
-			this.connectSuccessCallback();
+        //console.log('socket--onOpen',this.successCb);
+		if(this.successCb) {
+			this.successCb();
 		}
 	}
 
 	onError(evt) {
-        console.log('socket error ,evt =' + JSON.stringify(evt));
+        console.log('socket--error ,evt =' + JSON.stringify(evt));
 		this.close();
+        if(this.errorCb) {
+			this.errorCb(evt);
+		}
 	}
 
 	onMessage(evt) {
         this.recv(evt.data);
     }
     onClose() {
-        console.log('onclose ');
+        console.log('socket--onclose ');
         this.close();
         app.uiBaseEvent.emit('socketClose');
 	}

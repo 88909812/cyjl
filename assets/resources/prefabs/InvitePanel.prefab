@@ -3196,8 +3196,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "2",
-    "_N$string": "2",
+    "_string": "4",
+    "_N$string": "4",
     "_fontSize": 30,
     "_lineHeight": 30,
     "_enableWrapText": true,
@@ -4199,8 +4199,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "2",
-    "_N$string": "2",
+    "_string": "4",
+    "_N$string": "4",
     "_fontSize": 30,
     "_lineHeight": 30,
     "_enableWrapText": true,
@@ -5223,6 +5223,20 @@
       "__id__": 1
     },
     "_enabled": true,
+    "avatars": [
+      {
+        "__id__": 46
+      },
+      {
+        "__id__": 74
+      },
+      {
+        "__id__": 102
+      },
+      {
+        "__id__": 130
+      }
+    ],
     "_id": ""
   },
   {

@@ -10,7 +10,9 @@ export class Message {
     static SendBindStr = '0x000106';// 发送绑定信息 用于绑定账号 str格式 = "promoterId:13542"
     static SendStory = '0x000107';//剧情(新手引导数据)
     static GetCyExplain = '0x000108';//获取成语释义
+    static ClientTell = '0x000109';
     static GetPlayerValueByKey = '0x00010A';//根据key获取用户数据
+    static GetInviteShare = '0x00010B';
     static StartVideo = '0x000110'; // 开始观看视频
     static FinishVideo = '0x000111';// 观看视频完毕
     static SendConnect = '0x000113';
@@ -38,6 +40,7 @@ export class Message {
         '0x000106':'SendLvlExp',//修为升级进度条 这里的exp和玩家属性的exp不是一个概念
         '0x000107': 'Sign',
         '0x000108': 'BackGetSign',
+        '0x000109': 'SendInviteShare',
 
         '0x00010A': 'SendPlayerKV',//用户数据(根据key)key = lianxuqiandao  连续签到天数 value = "3"
         '0x00010D': 'ConnectAddress',
