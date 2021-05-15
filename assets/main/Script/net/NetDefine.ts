@@ -28,7 +28,8 @@ export class Message {
     static GetGuanKaAward = '0x010006';
     
     static RequestWithDraw = '0x000801';// 申请提现
-    static GetMoneyDetail = '0x000802';
+    static GetStoneDetail = '0x000802';
+    static ReqExchange = '0x000803';
 
     static cmd = {
         '0x000100': 'BackLogin',
