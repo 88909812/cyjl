@@ -27,6 +27,7 @@ export default class GameUI extends BaseView {
         super.onDisable();
     }
     init(){
+        app.checkPointData.data.list.sort((a, b) => { return a.pos - b.pos; });
         this.getComponentInChildren(IdiomLayer).init(app.checkPointData.data.list,app.checkPointData.data.width,app.checkPointData.data.height);
         this.getComponentInChildren(WordLayer).init(app.checkPointData.data.selection);
     }
