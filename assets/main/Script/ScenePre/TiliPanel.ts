@@ -23,13 +23,14 @@ export default class TiliPanel extends BasePanel {
         
     }
     onClickInvite(event:cc.Button){
+        app.soundManager.playClick();
         let msg = new app.PB.message.GetInviteShare();
         msg.tag = 'invite';
         let pack = new PackageBase(Message.GetInviteShare);
         pack.d(msg).to(app.sever);
     }
     onClickVideo(event:cc.Button){
-
+        app.soundManager.playClick();
     }
     SendInviteShare(res){
         app.uiManager.showUI('InvitePanel',res.list);

@@ -19,6 +19,7 @@ export default class IdiomExplain extends BaseNode {
         this.idiomLab.string = idiom;
     }
     onClickTip(){
+        app.soundManager.playClick();
         app.uiViewEvent.emit('TipIdiom',this.idiomLab.string);
     }
 }

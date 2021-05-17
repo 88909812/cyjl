@@ -1,4 +1,5 @@
 import HeadNode from '../../Prefabs/HeadNode';
+import { app } from '../app';
 import BasePanel from '../base/BasePanel';
 import { Message } from '../net/NetDefine';
 import { PackageBase } from '../net/PackageBase';
@@ -31,7 +32,7 @@ export default class InvitePanel extends BasePanel {
         }
     }
     onClickInvite(event:cc.Button){
-        
+        app.soundManager.playClick();
     }
 
 }

@@ -9,7 +9,6 @@ export default class GameScene extends BaseNode {
     data = null;
     onLoad () {
         super.onLoad();
-        this.init();
     }
     onEnable() {
         super.onEnable();

@@ -34,6 +34,7 @@ export default class BaseNode extends cc.Component {
         this.node.active = false;
     }
     onClickClose(){
+        app.soundManager.playClick();
         this.hide();
     }
 

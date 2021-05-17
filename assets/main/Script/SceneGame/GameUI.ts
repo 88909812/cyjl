@@ -38,6 +38,7 @@ export default class GameUI extends BaseView {
         this.checkpointLab.string = '第'+app.checkPointData.id+'关';
     }
     onClickTip(event:cc.Button){
+        app.soundManager.playClick();
         if (cc.Canvas.instance.getComponent(GameScene).data.freeTipNum<=0) {
             return;
         }
@@ -62,6 +63,7 @@ export default class GameUI extends BaseView {
         }
     }
     onClickReplay(event:cc.Button){
+        app.soundManager.playClick();
         let args = {
             isConfirm: false,
             content: '重新开始本关？'
@@ -78,8 +80,11 @@ export default class GameUI extends BaseView {
             pack.d(RequestGuanKaInfo).to(app.sever);
         });
     }
-    onClickLingshi(event:cc.Button){}
+    onClickLingshi(event:cc.Button){
+        app.soundManager.playClick();
+    }
     onClickReturn(event:cc.Button){
+        app.soundManager.playClick();
         cc.director.loadScene('Hall');
     }
 }

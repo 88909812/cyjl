@@ -1,4 +1,5 @@
 import ExplainItem from '../../Prefabs/ExplainItem';
+import { app } from '../app';
 import BasePanel from '../base/BasePanel';
 
 const {ccclass, property} = cc._decorator;
@@ -45,5 +46,7 @@ export default class ExplainPanel extends BasePanel {
             this.nodePool.put(node);
         }
     }
-    onClickShare(event:cc.Button){}
+    onClickShare(event:cc.Button){
+        app.soundManager.playClick();
+    }
 }

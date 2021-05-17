@@ -1,6 +1,7 @@
 import { app } from "../Script/app";
 import BaseNode from "../Script/base/BaseNode";
 import {CellStatus } from "../Script/GameDefine";
+import GameScene from "../Script/SceneGame/GameScene";
 
 const {ccclass, property} = cc._decorator;
 const MoveY = 800;
@@ -62,11 +63,14 @@ export default class IdiomCell extends BaseNode {
         this.node.angle = 0;
         this.node.scale = 1;
 
+        if (cc.Canvas.instance.getComponent(GameScene).data.first) {
+            this.playInitAni();
+        }
+
         if (cell.state) {//发现用户的操作记录
             this.label.string = cell.write;
             this.setState(cell.state,0,false);
         }else{//无操作记录
-            this.playInitAni();
             if (cell.isBlank) {
                 this.setState(CellStatus.Empty);
             }else{
@@ -125,14 +129,13 @@ export default class IdiomCell extends BaseNode {
                     this.cell.spriteFrame = this.wrongFrame;
                 }
                 if (isPlay) {
-                    let wrongAni = cc.tween(this.node).set({ angle: 0 })
+                    cc.tween(this.node).set({ angle: 0 })
                     .to(0.1, { angle: 10 })
                     .to(0.2, { angle: -10 })
                     .to(0.2, { angle: 10 })
                     .to(0.2, { angle: -10 })
                     .to(0.1, { angle: 0 }, { easing: 'backOut' })
                     .start();
-                    cc.tween(this.node).then(wrongAni);
                 }
                 
                 break;
@@ -141,12 +144,11 @@ export default class IdiomCell extends BaseNode {
                 this.setSelect(false);
                 this.data.state = state;
                 if (isPlay) {
-                    let rightAni = cc.tween(this.node).set({ scale: 1 })
+                    cc.tween(this.node).set({ scale: 1 })
                         .delay(delay)
                         .to(0.2, { scale: 1.2 })
                         .to(0.1, { scale: 1 }, { easing: 'backOut' })
                         .start();
-                    cc.tween(this.node).then(rightAni);
                 }
                 break;
             case CellStatus.Empty:

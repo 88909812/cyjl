@@ -42,6 +42,7 @@ export default class StoneExchangePanel extends BasePanel {
         }
     }
     onClickWithdraw(event:cc.Button){
+        app.soundManager.playClick();
         let msg = new app.PB.message.RequestWithDraw();
         msg.val = app.userData.data.money;
         msg.way = 'wx';
@@ -49,6 +50,7 @@ export default class StoneExchangePanel extends BasePanel {
         pack.d(msg).to(app.sever);
     }
     onClickExchangeHongbao(event:cc.Button){
+        app.soundManager.playClick();
         if (app.userData.data.stone<StoneExchangeCount) {
             app.uiManager.showUI('MessageNode','灵石数量不足！');
             return;

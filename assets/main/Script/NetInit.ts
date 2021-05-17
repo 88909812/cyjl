@@ -10,7 +10,7 @@ const {ccclass, property} = cc._decorator;
 @ccclass
 export default class NetInit extends BaseNode {
     ipIndex = 0;
-    accountID = '869614036237424';
+    accountID = '869614036237425';
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {

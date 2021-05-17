@@ -55,10 +55,12 @@ export default class IdiomLayer extends BaseNode {
                 }
             }
             if (isRight) {
+                app.soundManager.playRight();
                 this.sendCompleteIdiom(idiomCells);
                 //答对成语，直接跳到下一个空格
                 this.jumpToNextGrid();
             }else{
+                app.soundManager.playWrong();
                 for (let index = 0; index < idiomCells.length; index++) {
                     const idiomCell = idiomCells[index];
                     idiomCell.setState(CellStatus.Wrong);

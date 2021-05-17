@@ -39,6 +39,7 @@ export default class PassView extends BaseView {
         super.onDisable();
     }
     show(res,identifier){
+        app.soundManager.playGamePass();
         this.clearAllNode();
         this.data = res;
         app.userData.lastGuanKa = this.data.guanka;
@@ -71,9 +72,11 @@ export default class PassView extends BaseView {
         this.onClickClose();
     }
     onClickReturn(event:cc.Button){
+        app.soundManager.playClick();
         cc.director.loadScene('Hall');
     }
     onClickAddPower(event:cc.Button){
-
+        app.soundManager.playClick();
+        app.uiManager.showUI('TiliPanel');
     }
 }

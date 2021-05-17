@@ -49,6 +49,7 @@ message BackStartGuanKa {
        uint32 stone = 2;  // 完成此成语获取的灵石奖励
     }
     repeated Cy cylist = 6;
+    bool first = 7; //是否首次打开此管卡
 }
 
 //0x010003  显示通关奖励领取
