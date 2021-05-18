@@ -70,5 +70,9 @@ export default class AppInit extends cc.Component {
         app.platform.gameInitComplete();
     }
     
-    // update (dt) {}
+
+
+    // update (dt) {
+
+    // }
 }

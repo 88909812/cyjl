@@ -30,8 +30,8 @@ export module app{
 
     export let versionCode = '1.0.0';
     export let ipConfig = {
-        time: new Date().getTime(),
-        ipArr: ['192.168.0.38:31700','121.196.50.252:31700',],
+        wsIPs:['echo.websocket.org','192.168.0.38:31700/ws','121.196.50.252:31700/ws'],
+        wssIPs: ['cyjl.passball-tec.com:8443/ws/']
     };
     export let channelConfig = {
         domain: '121.196.50.252:8080',//http请求地址
@@ -52,4 +52,17 @@ export module app{
     export let waitingPanel:WaitingPanel = null;
 
     export let IdiomPos:cc.Vec3[][] = null;
+
+    export let NoobGuideStep = {
+        "0": {
+            rootPath: "Hall/HallUI",
+            nodePaths: ["BottomNode/btn_StartGame"],
+            guidePath:'BottomNode/btn_StartGame'
+        },
+        "1": {
+            rootPath: "GameScene/GameUI",
+            nodePaths: ["WordLayer",'idiomNode/maskNode/IdiomLayer'],
+            guidePath:'idiomNode/maskNode/IdiomLayer'
+        }
+    }
 }

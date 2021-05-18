@@ -53,8 +53,13 @@ export default class NetInit extends BaseNode {
     }
     connectSever(){
         app.sever.close();
-
-        if (!app.ipConfig.ipArr || app.ipConfig.ipArr.length <= this.ipIndex) {
+        let IPs;
+        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
+            IPs = app.ipConfig.wssIPs;
+        }else{
+            IPs = app.ipConfig.wsIPs;
+        }
+        if (!IPs || IPs.length <= this.ipIndex) {
             let args = {
                 isConfirm: true,
                 content: '服务器维护中，请稍后再试...'
@@ -66,7 +71,7 @@ export default class NetInit extends BaseNode {
             return;
         }
         
-        let ipCur = app.ipConfig.ipArr[this.ipIndex];
+        let ipCur = IPs[this.ipIndex];
         
         app.sever.setServerInfo({ip:ipCur,port:31700});
         app.sever.connect(() => {
@@ -85,11 +90,11 @@ export default class NetInit extends BaseNode {
             this.connectSever();
         });
         //创建链接超时处理
-        app.waitingPanel.show(5,()=>{
-            this.sendLoginFail();
-            this.ipIndex++;
-            this.connectSever();
-        });
+        // app.waitingPanel.show(5,()=>{
+        //     this.sendLoginFail();
+        //     this.ipIndex++;
+        //     this.connectSever();
+        // });
     }
 
     sendHeartBeat() {
@@ -172,16 +177,22 @@ export default class NetInit extends BaseNode {
     }
 
     sendConnectData() {
+        let IPs;
+        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
+            IPs = app.ipConfig.wssIPs;
+        }else{
+            IPs = app.ipConfig.wsIPs;
+        }
         let PB = app.PB;
         //发送登录数据，供服务器参考
         let channelData = {
-            ipArr: app.ipConfig.ipArr,
+            ipArr: IPs,
             domain: app.channelConfig.domain,
             channel: app.channelConfig.channel,
             group: app.channelConfig.group
         };
         let msg = new PB.message.SendConnect();
-        msg.str = JSON.stringify(channelData) + '|' + app.ipConfig.ipArr[this.ipIndex];
+        msg.str = JSON.stringify(channelData) + '|' + IPs[this.ipIndex];
         let pack = new PackageBase(Message.SendConnect);
         pack.d(msg).to(app.sever);
     }

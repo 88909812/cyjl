@@ -23,30 +23,54 @@ export class SocketServer extends Server {
     connect(listener?: Function,errorCb?:Function): void {
         let url
         if (cc.sys.platform == cc.sys.WECHAT_GAME) {
-            if (this.serverInfo.ip.indexOf(":") != -1 ) {
-                url = "wss://" + this.serverInfo.ip;
-            }else{
-                url = "wss://" + this.serverInfo.ip + ":" + this.serverInfo.port;
-            }
+            url = "wss://" + this.serverInfo.ip;
         }else{
-            if (this.serverInfo.ip.indexOf(":") != -1 ) {
-                url = "ws://" + this.serverInfo.ip;
-            }else{
-                url = "ws://" + this.serverInfo.ip + ":" + this.serverInfo.port;
-            }
+            url = "ws://" + this.serverInfo.ip;
         }
         
         console.log('url=====',url);
-        this.socket = new WebSocket(url);
-        this.socket.binaryType 	= "arraybuffer";
-        this.socket.onopen 		= this.onOpen.bind(this);					// 建立socket连接成功后的回调
-		this.socket.onerror 	= this.onError.bind(this); 	// 建立socket之前发生错误的回调
-		this.socket.onmessage 	= this.onMessage.bind(this);				// 收到消息时候的回调
-        this.socket.onclose 	= this.onClose.bind(this);					// 关闭socket时候的回调
+
+        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
+            this.socket = this.createWxSocket({url: url});
+        } else {
+            this.socket = new WebSocket(url);	
+            this.socket.binaryType 	= "arraybuffer";
+            this.socket.onopen 		= this.onOpen.bind(this);	// 建立socket连接成功后的回调
+            this.socket.onerror 	= this.onError.bind(this); 	// 建立socket之前发生错误的回调
+            this.socket.onmessage 	= this.onMessage.bind(this);// 收到消息时候的回调
+            this.socket.onclose 	= this.onClose.bind(this);	
+        }
+
         this.successCb = listener;
         this.errorCb = errorCb;
-        //console.log('this.socket=====',this.socket);
+        console.log('this.socket=====',this.socket);
     }
+    createWxSocket (data) {
+        let SocketTask = wx.connectSocket({
+            url: data.url,
+            success: ()=> {
+                console.log("connect socket success.");
+            },
+            fail: ()=> {
+                console.log("connect socket fail.");
+            },
+        });
+        SocketTask.onOpen((res)=> {
+            console.log('onOpen--',res)
+            this.onOpen();
+        });
+        SocketTask.onClose((res)=> {
+            this.onClose();
+        });
+        SocketTask.onError((res)=> {
+            this.onError(res);
+        });
+        SocketTask.onMessage((res)=> {
+            this.onMessage(res);
+        });
+        return SocketTask;
+    };
+
     onOpen() {
         //console.log('socket--onOpen',this.successCb);
 		if(this.successCb) {
