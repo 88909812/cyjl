@@ -1,4 +1,6 @@
 import { app } from "../app";
+import { Message } from "../net/NetDefine";
+import { PackageBase } from "../net/PackageBase";
 
 enum AdType{
     FullVideo = 0,
@@ -277,6 +279,69 @@ export default class PlatformManager {
         } else if (cc.sys.platform === cc.sys.IPAD || cc.sys.platform === cc.sys.IPHONE) {
             //TODO
         }
+    }
+    updateUserInfo(){
+        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
+            wx.getSetting({
+                success:(res)=> {
+                    if (res.authSetting['scope.userInfo']) {
+                        // 已经授权，可以直接调用 getUserInfo 获取头像昵称
+                        wx.getUserInfo({
+                            success: (res)=> {
+                                console.log(res);
+                                let userData = res.userInfo;
+                                if (userData) {
+                                    this.uploadUserInfo(userData);
+                                }
+                            }
+                        })
+                    }
+                }
+            });
+        }
+    }
+    initAuthButton(){
+        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
+            wx.getSetting({
+                success:(res)=> {
+                    console.log('getSetting--',res);
+                    if (!res.authSetting['scope.userInfo']) {// 已经授权可以直接调用 getUserInfo 获取头像昵称
+                        let btnSize = cc.winSize;
+                        let ratio = 1;
+                        let width = btnSize.width *ratio;
+                        let height = btnSize.height*ratio;
+    
+                        let btnAuthorize = wx.createUserInfoButton({
+                            type: 'text',
+                            text: '',
+                            style: {
+                                left: 0,
+                                top: 0,
+                                width: width,
+                                height: height,
+                                backgroundColor: ''
+                            }
+                        });
+                        btnAuthorize.onTap((res) => {
+                            console.log('getUserInfo===', res);
+                            let userData = res.userInfo;
+                            if (userData) {
+                                btnAuthorize.destroy();
+                                this.uploadUserInfo(userData);
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
+    private uploadUserInfo(userData) {
+        let msg = new app.PB.message.SendMPUserInfo();
+        msg.name = userData.nickName;
+        msg.avatar = userData.avatarUrl;
+        msg.sex = userData.gender;
+        let pack = new PackageBase(Message.SendMPUserInfo);
+        pack.d(msg).to(app.sever);
     }
     //****** java调用js ******** */
     onFullVideoAdError(){

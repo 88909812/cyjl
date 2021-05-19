@@ -27,7 +27,7 @@ export default class GameUI extends BaseNode {
         super.onLoad();
         this.getComponent(cc.Widget).top = app.statusBarHeight;
         this.refreshInfo();
-        this.avatar.initAuthButton();
+
         this.avatar.initClickHandler();
     }
     onEnable() {
@@ -124,6 +124,7 @@ export default class GameUI extends BaseNode {
             return;
         }
         if (app.userData.story >= 2) {
+            app.platform.initAuthButton();
             return;
         }
 

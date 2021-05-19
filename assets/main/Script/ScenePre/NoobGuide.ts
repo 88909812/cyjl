@@ -61,6 +61,7 @@ export default class NoobGuide extends BaseNode {
 
     sendNextStep(){
         app.userData.story++;
+
         let msg = new app.PB.message.SendStory();
         msg.data = app.userData.story;
         let pack = new PackageBase(Message.SendStory);

@@ -45,83 +45,11 @@ export default class HeadNode extends BaseNode {
     }
 
     onClickHead(){
-        wx.getSetting({
-            success:(res)=> {
-                if (res.authSetting['scope.userInfo']) {
-                    // 已经授权，可以直接调用 getUserInfo 获取头像昵称
-                    wx.getUserInfo({
-                        success: (res)=> {
-                            console.log(res);
-                            let userData = res.userInfo;
-                            if (userData) {
-                                this.uploadUserInfo(userData);
-                            }
-                        }
-                    })
-                }
-            }
-        });
+        app.platform.updateUserInfo();
+        
         
     }
 
-    initAuthButton(){
-        wx.getSetting({
-            success:(res)=> {
-                console.log('getSetting--',res);
-                if (res.authSetting['scope.userInfo']) {
-                    // 已经授权，可以直接调用 getUserInfo 获取头像昵称
-
-                } else {
-                    if (this.btnAuthorize) {
-                        return;
-                    }
-                    let worldPos = this.node.convertToWorldSpaceAR(cc.v2(0, 0));
-                    let btnSize = cc.size(this.node.width, this.node.height);
-                    let frameSize = cc.view.getFrameSize();
-                    let winSize = cc.winSize;
-                    let ratio = frameSize.width/winSize.width;
-                    //适配不同机型来创建微信授权按钮
-                    let left = (worldPos.x - btnSize.width * 0.5)*ratio;
-                    let top = (winSize.height - worldPos.y - btnSize.height * 0.5)*ratio;
-                    let width = btnSize.width *ratio;
-                    let height = btnSize.height*ratio;
-
-                    this.btnAuthorize = wx.createUserInfoButton({
-                        type: 'text',
-                        text: '',
-                        style: {
-                            left: left,
-                            top: top,
-                            width: width,
-                            height: height,
-                            backgroundColor: ''
-                        }
-                    });
-                    this.btnAuthorize.onTap((res) => {
-                        console.log('getUserInfo===', res);
-                        let userData = res.userInfo;
-                        if (userData) {
-                            this.uploadUserInfo(userData);
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    uploadUserInfo(userData) {
-        if (this.btnAuthorize) {
-            this.btnAuthorize.destroy();
-            this.btnAuthorize = null;
-        }
-        
-        let msg = new app.PB.message.SendMPUserInfo();
-        msg.name = userData.nickName;
-        msg.avatar = userData.avatarUrl;
-        msg.sex = userData.gender;
-        let pack = new PackageBase(Message.SendMPUserInfo);
-        pack.d(msg).to(app.sever);
-    }
     onDisable(){
         super.onDisable();
         if (this.btnAuthorize) {
