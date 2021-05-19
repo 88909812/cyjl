@@ -57,12 +57,14 @@ export module app{
         "0": {
             rootPath: "Hall/HallUI",
             nodePaths: ["BottomNode/btn_StartGame"],
-            guidePath:'BottomNode/btn_StartGame'
+            guidePath:'BottomNode/btn_StartGame',
+            text:'点击这里就可以开始游戏啦！'
         },
         "1": {
             rootPath: "GameScene/GameUI",
-            nodePaths: ["WordLayer",'idiomNode/maskNode/IdiomLayer'],
-            guidePath:'idiomNode/maskNode/IdiomLayer'
+            nodePaths: ['idiomNode/maskNode/IdiomLayer'],
+            guidePath:'WordLayer',
+            text:'点击下方的字，组成成语'
         }
     }
 }

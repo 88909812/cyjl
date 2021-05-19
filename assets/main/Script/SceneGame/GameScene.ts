@@ -6,16 +6,18 @@ import GameUI from './GameUI';
 const {ccclass, property} = cc._decorator;
 @ccclass
 export default class GameScene extends BaseNode {
+
     data = null;
     onLoad () {
         super.onLoad();
+
     }
     onEnable() {
         super.onEnable();
         this.onEventUI('CheckPointInit',()=>{
             this.init();
         });
-
+        
         let listeners = ['BackStartGuanKa','BackGuanKaComplete','BackGetGuanKaAward','SendReachEnd'];
         this.register(listeners);
     }
@@ -64,7 +66,8 @@ export default class GameScene extends BaseNode {
         }
         this.data = res;
         this.getComponentInChildren(GameUI).setFreeTipNum(this.data.freeTipNum);
-        this.getComponentInChildren(GameUI).init();
+        this.getComponentInChildren(GameUI).init(this.data);
+
     }
     BackGuanKaComplete(res){
         console.log(res);
@@ -135,4 +138,6 @@ export default class GameScene extends BaseNode {
     SendReachEnd(res){
         console.log(res);
     }
+
+
 }

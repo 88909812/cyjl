@@ -182,7 +182,7 @@ export default class IdiomCell extends BaseNode {
         }
         return isComplete;
     }
-    private getLineCells():cc.Component[]{
+    getLineCells():cc.Component[]{
         let line = Math.floor(this.data.pos/this.girdWidth); 
         let column = this.data.pos%this.girdHeight;
         let IdiomCells = [this];
@@ -209,7 +209,7 @@ export default class IdiomCell extends BaseNode {
         }
         return IdiomCells;
     }
-    private getColumnCells():cc.Component[]{
+    getColumnCells():cc.Component[]{
         let line = Math.floor(this.data.pos/this.girdWidth); 
         let column = this.data.pos%this.girdHeight;
         let IdiomCells = [this];

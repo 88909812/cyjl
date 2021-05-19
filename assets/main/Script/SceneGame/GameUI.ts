@@ -1,13 +1,16 @@
 import { app } from '../app';
-import BaseView from '../base/BaseView';
+import BaseNode from '../base/BaseNode';
 import { Message } from '../net/NetDefine';
 import { PackageBase } from '../net/PackageBase';
+import NoobGuide from '../ScenePre/NoobGuide';
 import GameScene from './GameScene';
 import IdiomLayer from './IdiomLayer';
 import WordLayer from './WordLayer';
 const {ccclass, property} = cc._decorator;
 @ccclass
-export default class GameUI extends BaseView {
+export default class GameUI extends BaseNode {
+    @property(cc.Node)
+    curtain:cc.Node = null;
     cells = [];
     @property(cc.Label)
     checkpointLab:cc.Label = null;
@@ -26,10 +29,23 @@ export default class GameUI extends BaseView {
     onDisable(){
         super.onDisable();
     }
-    init(){
+    init(data){
         app.checkPointData.data.list.sort((a, b) => { return a.pos - b.pos; });
         this.getComponentInChildren(IdiomLayer).init(app.checkPointData.data.list,app.checkPointData.data.width,app.checkPointData.data.height);
         this.getComponentInChildren(WordLayer).init(app.checkPointData.data.selection);
+
+        this.curtain.active = false;
+        if (data.first) {
+            this.curtain.active = true;
+            this.scheduleOnce(()=>{
+                this.curtain.active = false;
+                this.checkNoobGuide();
+            },3);
+        }else{
+            this.scheduleOnce(()=>{
+                this.checkNoobGuide();
+            },0.1);
+        }
     }
     setFreeTipNum(num:number){
         this.freeTipNum.node.parent.active = num>0;
@@ -87,5 +103,36 @@ export default class GameUI extends BaseView {
     onClickReturn(event:cc.Button){
         app.soundManager.playClick();
         cc.director.loadScene('Hall');
+    }
+    checkNoobGuide(){
+        if (!app.userData||typeof(app.userData.story)!='number') {
+            return;
+        }
+        if (app.userData.story >= 2) {
+            return;
+        }
+
+        let noobGuideNode = cc.Canvas.instance.node.getChildByName('NoobGuide');
+        if (noobGuideNode && noobGuideNode.active) {
+            return;
+        }
+        let guide = app.NoobGuideStep[app.userData.story];
+        if (!guide) {
+            return;
+        }
+        let rootNode:cc.Node = cc.find(guide.rootPath);
+        if (!rootNode||!rootNode.active||!rootNode.isValid) {
+            return;
+        }
+        let showNodes:cc.Node[] = [];
+        let cell = this.getComponentInChildren(IdiomLayer).getSelectCell();
+        showNodes.push(cell.node);
+        let word = this.getComponentInChildren(WordLayer).getWordObjectByStr(cell.data.str);
+        if (word) {
+            showNodes.push(word.node);
+            let str = '点击“<color=#FFE854>'+cell.data.str+'</c>”字，组成成语';
+            this.getComponentInChildren(NoobGuide).showGuideNode(showNodes,word.node,str);
+        }
+        
     }
 }

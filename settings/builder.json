@@ -10,7 +10,7 @@
   "startScene": "83bb63a2-8f32-4af2-a520-9a2a466c9909",
   "title": "idomImmortality",
   "webOrientation": "auto",
-  "inlineSpriteFrames": true,
+  "inlineSpriteFrames": false,
   "inlineSpriteFrames_native": true,
   "mainCompressionType": "default",
   "mainIsRemote": false,

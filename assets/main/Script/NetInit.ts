@@ -90,11 +90,11 @@ export default class NetInit extends BaseNode {
             this.connectSever();
         });
         //创建链接超时处理
-        // app.waitingPanel.show(5,()=>{
-        //     this.sendLoginFail();
-        //     this.ipIndex++;
-        //     this.connectSever();
-        // });
+        app.waitingPanel.show(5,()=>{
+            this.sendLoginFail();
+            this.ipIndex++;
+            this.connectSever();
+        });
     }
 
     sendHeartBeat() {

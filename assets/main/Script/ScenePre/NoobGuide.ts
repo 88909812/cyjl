@@ -24,8 +24,7 @@ export default class NoobGuide extends BaseNode {
         cc.Tween.stopAllByTarget(this.tipHand.children[0]);
     }
 
-    show(guide,rootNode){
-        this.node.active = true;
+    show(guide,rootNode,text?:string){
         this.reset();
 
         let rects:cc.Rect[] = [];
@@ -36,33 +35,22 @@ export default class NoobGuide extends BaseNode {
                 break;
             }
             let nodePoint = this.mask.node.convertToNodeSpaceAR(showNode.convertToWorldSpaceAR(cc.v2(0,0)));
-            rects.push(cc.rect(nodePoint.x,nodePoint.y,showNode.width,showNode.height));
+            rects.push(cc.rect(nodePoint.x-showNode.width*showNode.anchorX,nodePoint.y-showNode.height*showNode.anchorY,showNode.width,showNode.height));
         }
         this.mask.init(rects);
 
 
-        let guideNode:cc.Node = cc.find(guide.guidePath,rootNode);
-        let guidePoint = this.node.convertToNodeSpaceAR(guideNode.convertToWorldSpaceAR(cc.v2(0,0)));
-        this.tipHand.active = true;
-        this.tipHand.x = guidePoint.x;
-        this.tipHand.y = guidePoint.y;
+        let guideNode: cc.Node = cc.find(guide.guidePath, rootNode);
+        let guidePoint = this.node.convertToNodeSpaceAR(guideNode.convertToWorldSpaceAR(cc.v2(0, 0)));
+        this.tipHand.x = guidePoint.x + guideNode.width * (0.5 - guideNode.anchorX);
+        this.tipHand.y = guidePoint.y + guideNode.height * (0.5 - guideNode.anchorY);
         this.tipHand.width = guideNode.width;
         this.tipHand.height = guideNode.height;
+        this._updateTipInfo(guide);
         this._updateClickableArea();
     }
     reset(){
-        this.tipHand.height = 0;
-        this.tipHand.width = 0;
-        this.tipHand.x = 0;
-        this.tipHand.y = 0;
-        this.tipHand.scale = 1;
-        this.tipHand.active = false;
-        
-        // this.mask.type = cc.Mask.Type.RECT;
-        // this.mask.node.width = 0;
-        // this.mask.node.height = 0;
-        // this.mask.node.active = true;
-        // this.curtain.anchorY = 0.5;
+
     }
 
 
@@ -73,13 +61,52 @@ export default class NoobGuide extends BaseNode {
 
     sendNextStep(){
         app.userData.story++;
-        // let msg = new PB.message.SendStory();
-        // msg.data = app.noobGuideIndex;
-        // let pack = new PackageBase(Message.SendStory);
-        // pack.d(msg).to(app.sever);
-        // this.hide();
+        let msg = new app.PB.message.SendStory();
+        msg.data = app.userData.story;
+        let pack = new PackageBase(Message.SendStory);
+        pack.d(msg).to(app.sever);
+        this.hide();
     }
+    showGuideNode(showNodes,guideNode,str){
+        this.node.active = true;
+        let rects:cc.Rect[] = [];
+        for (let index = 0; index < showNodes.length; index++) {
+            let showNode = showNodes[index];
+            let nodePoint = this.mask.node.convertToNodeSpaceAR(showNode.convertToWorldSpaceAR(cc.v2(0,0)));
+            rects.push(cc.rect(nodePoint.x-showNode.width*showNode.anchorX,nodePoint.y-showNode.height*showNode.anchorY,showNode.width,showNode.height));
+        }
+        this.mask.add(rects);
 
+        let guidePoint = this.node.convertToNodeSpaceAR(guideNode.convertToWorldSpaceAR(cc.v2(0, 0)));
+        this.tipHand.x = guidePoint.x + guideNode.width * (0.5 - guideNode.anchorX);
+        this.tipHand.y = guidePoint.y + guideNode.height * (0.5 - guideNode.anchorY);
+        this.tipHand.width = guideNode.width;
+        this.tipHand.height = guideNode.height;
+        this._updateTipInfo({text:str});
+        this._updateClickableArea();
+    }
+    _updateTipInfo(guide){
+        this.tipHand.children.forEach(node => {
+            node.active = false;
+        });
+        let space = 20;
+        //判断是否在坐边
+        if (this.tipHand.x + this.tipHand.width / 2 < 0) {
+            let node = this.tipHand.getChildByName('guide_left');
+            node.active = true;
+            node.x = this.tipHand.width / 2 + space;
+            let text = node.getComponentInChildren(cc.RichText);
+            text.string = guide.text;
+            text.node.x = -(this.tipHand.width / 2 + space);
+            text.node.y = -(this.tipHand.height / 2 + space);
+        } else {
+            let node = this.tipHand.getChildByName('guide_top')
+            node.active = true;
+            node.y = this.tipHand.height / 2 + space;
+            let text = node.getComponentInChildren(cc.RichText);
+            text.string = guide.text;
+        }
+    }
     _updateClickableArea() {
         cc.find('topMask', this.node).y = this.tipHand.y + this.tipHand.height * 0.5;
         cc.find('bottomMask', this.node).y = this.tipHand.y - this.tipHand.height * 0.5;
