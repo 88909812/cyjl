@@ -97,7 +97,7 @@ export default class NoobGuide extends BaseNode {
             node.x = this.tipHand.width / 2 + space;
             let text = node.getComponentInChildren(cc.RichText);
             text.string = guide.text;
-            text.node.x = -(this.tipHand.width / 2 + space);
+            text.node.x = -(this.tipHand.width + space);
             text.node.y = -(this.tipHand.height / 2 + space);
         } else {
             let node = this.tipHand.getChildByName('guide_top')

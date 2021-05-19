@@ -54,11 +54,12 @@ export default class NetInit extends BaseNode {
     connectSever(){
         app.sever.close();
         let IPs;
-        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
-            IPs = app.ipConfig.wssIPs;
-        }else{
+        if (cc.sys.isBrowser||CC_DEBUG) {
             IPs = app.ipConfig.wsIPs;
+        }else{
+            IPs = app.ipConfig.wssIPs;
         }
+
         if (!IPs || IPs.length <= this.ipIndex) {
             let args = {
                 isConfirm: true,
@@ -178,10 +179,10 @@ export default class NetInit extends BaseNode {
 
     sendConnectData() {
         let IPs;
-        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
-            IPs = app.ipConfig.wssIPs;
-        }else{
+        if (cc.sys.isBrowser||CC_DEBUG) {
             IPs = app.ipConfig.wsIPs;
+        }else{
+            IPs = app.ipConfig.wssIPs;
         }
         let PB = app.PB;
         //发送登录数据，供服务器参考

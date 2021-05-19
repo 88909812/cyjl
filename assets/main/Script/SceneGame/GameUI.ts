@@ -1,3 +1,4 @@
+import HeadNode from '../../Prefabs/HeadNode';
 import { app } from '../app';
 import BaseNode from '../base/BaseNode';
 import { Message } from '../net/NetDefine';
@@ -16,15 +17,24 @@ export default class GameUI extends BaseNode {
     checkpointLab:cc.Label = null;
     @property(cc.Label)
     freeTipNum:cc.Label = null;
+    @property(HeadNode)
+    avatar:HeadNode = null;
 
     checkpointIndex = 1;
     c_width = 9;
     c_height = 9;
     onLoad () {
         super.onLoad();
+        this.getComponent(cc.Widget).top = app.statusBarHeight;
+        this.refreshInfo();
+        this.avatar.initAuthButton();
+        this.avatar.initClickHandler();
     }
     onEnable() {
         super.onEnable();
+        this.onEventUI('UpdateUserInfo',()=>{
+            this.refreshInfo();
+        });
     }
     onDisable(){
         super.onDisable();
@@ -45,6 +55,11 @@ export default class GameUI extends BaseNode {
             this.scheduleOnce(()=>{
                 this.checkNoobGuide();
             },0.1);
+        }
+    }
+    refreshInfo(){
+        if (app.userData.data) {
+            this.avatar.init(app.userData.data.avatar);
         }
     }
     setFreeTipNum(num:number){

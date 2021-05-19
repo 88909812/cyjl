@@ -25,6 +25,7 @@ export default class HallUI extends BaseNode {
 
     onLoad () {
         super.onLoad();
+        this.getComponent(cc.Widget).top = app.statusBarHeight;
         app.soundManager.playBackgroundMusic();
         this.level.string = app.levelData.currName;
         if (app.oldLevelData.length>0) {

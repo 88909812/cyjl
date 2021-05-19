@@ -22,11 +22,6 @@ export class SocketServer extends Server {
      */
     connect(listener?: Function,errorCb?:Function): void {
         let url = this.serverInfo.ip;
-        // if (cc.sys.platform == cc.sys.WECHAT_GAME) {
-        //     url = "wss://" + this.serverInfo.ip;
-        // }else{
-        //     url = "ws://" + this.serverInfo.ip;
-        // }
         
         console.log('url=====',url);
 
