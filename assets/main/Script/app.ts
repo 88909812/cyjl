@@ -67,4 +67,6 @@ export module app{
             text:'点击下方的字，组成成语'
         }
     }
+    //邀请人的id
+    export let inviteId = 0;
 }

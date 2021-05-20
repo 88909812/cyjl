@@ -35,7 +35,7 @@ export default class AppInit extends cc.Component {
                 app.loginParam = JSON.parse(loginParamStr);
             }
         }
-        
+
 
         //读取本地关卡数据
         app.checkPointData = {};

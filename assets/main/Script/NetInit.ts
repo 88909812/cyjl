@@ -26,6 +26,8 @@ export default class NetInit extends BaseNode {
         this.onEventUI('reqGuanKaInfo',()=>{
             this.reqGuanKaInfo();
         },'uiBaseEvent');
+
+
     }
     onDisable(){
         //重载，防止监听函数消失

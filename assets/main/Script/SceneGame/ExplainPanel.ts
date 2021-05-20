@@ -48,5 +48,6 @@ export default class ExplainPanel extends BasePanel {
     }
     onClickShare(event:cc.Button){
         app.soundManager.playClick();
+        app.platform.share();
     }
 }

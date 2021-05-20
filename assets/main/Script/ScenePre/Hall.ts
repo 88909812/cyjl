@@ -1,5 +1,7 @@
 import { app } from '../app';
 import BaseNode from '../base/BaseNode';
+import { Message } from '../net/NetDefine';
+import { PackageBase } from '../net/PackageBase';
 import HallUI from './HallUI';
 const {ccclass, property} = cc._decorator;
 @ccclass
@@ -9,6 +11,16 @@ export default class Hall extends BaseNode {
     }
     start(){
         app.uiBaseEvent.emit('reqGuanKaInfo');
+
+        if (app.inviteId!=0) {
+            console.log('send--invite---id=',app.inviteId);
+            let msg = new app.PB.message.ClientTell();
+            msg.targetUserId = app.inviteId;
+            msg.tag = 'invite';
+            let pack = new PackageBase(Message.ClientTell);
+            pack.d(msg).to(app.sever);
+            app.inviteId = 0;//发完后清空邀请信息
+        }
 
         this.checkNoobGuide();
     }

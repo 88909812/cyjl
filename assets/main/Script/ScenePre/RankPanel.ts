@@ -42,6 +42,7 @@ export default class RankPanel extends BasePanel {
     }
     onClickShare(event:cc.Button){
         app.soundManager.playClick();
+        app.platform.share();
     }
     RankData(res){
         console.log('RankData--',res);

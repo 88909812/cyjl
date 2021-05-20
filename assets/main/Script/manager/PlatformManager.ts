@@ -17,8 +17,32 @@ export default class PlatformManager {
             wx.onShow((res)=>{
                 console.log('onShow===',res);
                 wx.setKeepScreenOn({ keepScreenOn: true });
+                if (res.query.inviteId) {
+                    app.inviteId = Number(launchOption.query.inviteId);
+                }
             });
             wx.showShareMenu();
+
+            wx.onShareAppMessage(() => {
+                return {
+                    title: '弘扬中华文化，开启头脑风暴，一起来玩成语大修仙！',
+                    imageUrl: '',
+                    query: 'inviteId='+app.userData.data.userId
+                }
+            });
+            wx.onShareTimeline(() => {
+                return {
+                    title: '转发标题',
+                    imageUrl: '', // 图片 URL
+                    query: 'inviteId='+app.userData.data.userId
+                }
+            })
+
+            let launchOption = wx.getLaunchOptionsSync();
+            console.log('LaunchOption===',launchOption);
+            if (launchOption.query.inviteId) {
+                app.inviteId = Number(launchOption.query.inviteId);
+            }
         }
     }
     
@@ -172,37 +196,82 @@ export default class PlatformManager {
         }
         return bool;
     }
-    WXSendAuth(){
-        if (!this.isWxInstalled()&&cc.sys.isNative) {
-            app.uiManager.showUI('MessageNode','请先安装微信');
-            return;
+    
+    share(shareType = 0, url = '', title = '', content = '') {        
+        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
+            wx.shareAppMessage({
+                title: '弘扬中华文化，开启头脑风暴，一起来玩成语大修仙！',
+                imageUrl: '',
+                query: 'inviteId=' + app.userData.data.userId
+            });
         }
-        if (cc.sys.platform == cc.sys.ANDROID) {
+    }
+    updateUserInfo(){
+        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
+            wx.getSetting({
+                success:(res)=> {
+                    if (res.authSetting['scope.userInfo']) {
+                        // 已经授权，可以直接调用 getUserInfo 获取头像昵称
+                        wx.getUserInfo({
+                            success: (res)=> {
+                                console.log(res);
+                                let userData = res.userInfo;
+                                if (userData) {
+                                    this.uploadUserInfo(userData);
+                                }
+                            }
+                        })
+                    }
+                }
+            });
+        }else if (cc.sys.platform == cc.sys.ANDROID) {
             jsb.reflection.callStaticMethod(packageName+"AppActivity", "WXSendAuth","()V");
         }else if (cc.sys.platform === cc.sys.IPAD || cc.sys.platform === cc.sys.IPHONE) {
             jsb.reflection.callStaticMethod("AppController","WXSendAuth");
         }
     }
+    initAuthButton(){
+        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
+            wx.getSetting({
+                success:(res)=> {
+                    console.log('getSetting--',res);
+                    if (!res.authSetting['scope.userInfo']) {// 已经授权可以直接调用 getUserInfo 获取头像昵称
+                        let btnSize = cc.winSize;
+                        let ratio = 1;
+                        let width = btnSize.width *ratio;
+                        let height = btnSize.height*ratio;
     
-    WXShare(shareType = 0, url = '', title = '', content = '') {        
-        if (CC_PREVIEW||cc.sys.isBrowser) {
-            app.uiViewEvent.emit('WXShareCallBack');
-            return;
-        }
-        if (cc.sys.platform == cc.sys.ANDROID) {
-            jsb.reflection.callStaticMethod(packageName + "AppActivity", "WXShare", "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", shareType, url, title, content);
-        } else if (cc.sys.platform === cc.sys.IPAD || cc.sys.platform === cc.sys.IPHONE) {
-            jsb.reflection.callStaticMethod("AppController", "WXShare:url:title:content:", shareType, url, title, content);
+                        let btnAuthorize = wx.createUserInfoButton({
+                            type: 'text',
+                            text: '',
+                            style: {
+                                left: 0,
+                                top: 0,
+                                width: width,
+                                height: height,
+                                backgroundColor: ''
+                            }
+                        });
+                        btnAuthorize.onTap((res) => {
+                            console.log('getUserInfo===', res);
+                            let userData = res.userInfo;
+                            if (userData) {
+                                btnAuthorize.destroy();
+                                this.uploadUserInfo(userData);
+                            }
+                        });
+                    }
+                }
+            });
         }
     }
-    getUmengDeviceToken():string{
-        let deviceToken = '';
-        if (cc.sys.platform == cc.sys.ANDROID) {
-            deviceToken = jsb.reflection.callStaticMethod(packageName + "AppActivity", "getUmengDeviceToken", "()Ljava/lang/String;");
-        } else if (cc.sys.platform === cc.sys.IPAD || cc.sys.platform === cc.sys.IPHONE) {
-            deviceToken = jsb.reflection.callStaticMethod("AppController", "getUmengDeviceToken");
-        }
-        return deviceToken;
+    private uploadUserInfo(userData) {
+        let msg = new app.PB.message.SendMPUserInfo();
+        msg.name = userData.nickName;
+        msg.avatar = userData.avatarUrl;
+        msg.sex = userData.gender;
+        let pack = new PackageBase(Message.SendMPUserInfo);
+        pack.d(msg).to(app.sever);
     }
     isAliPayInstalled(){
         let bool = false;
@@ -280,69 +349,7 @@ export default class PlatformManager {
             //TODO
         }
     }
-    updateUserInfo(){
-        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
-            wx.getSetting({
-                success:(res)=> {
-                    if (res.authSetting['scope.userInfo']) {
-                        // 已经授权，可以直接调用 getUserInfo 获取头像昵称
-                        wx.getUserInfo({
-                            success: (res)=> {
-                                console.log(res);
-                                let userData = res.userInfo;
-                                if (userData) {
-                                    this.uploadUserInfo(userData);
-                                }
-                            }
-                        })
-                    }
-                }
-            });
-        }
-    }
-    initAuthButton(){
-        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
-            wx.getSetting({
-                success:(res)=> {
-                    console.log('getSetting--',res);
-                    if (!res.authSetting['scope.userInfo']) {// 已经授权可以直接调用 getUserInfo 获取头像昵称
-                        let btnSize = cc.winSize;
-                        let ratio = 1;
-                        let width = btnSize.width *ratio;
-                        let height = btnSize.height*ratio;
-    
-                        let btnAuthorize = wx.createUserInfoButton({
-                            type: 'text',
-                            text: '',
-                            style: {
-                                left: 0,
-                                top: 0,
-                                width: width,
-                                height: height,
-                                backgroundColor: ''
-                            }
-                        });
-                        btnAuthorize.onTap((res) => {
-                            console.log('getUserInfo===', res);
-                            let userData = res.userInfo;
-                            if (userData) {
-                                btnAuthorize.destroy();
-                                this.uploadUserInfo(userData);
-                            }
-                        });
-                    }
-                }
-            });
-        }
-    }
-    private uploadUserInfo(userData) {
-        let msg = new app.PB.message.SendMPUserInfo();
-        msg.name = userData.nickName;
-        msg.avatar = userData.avatarUrl;
-        msg.sex = userData.gender;
-        let pack = new PackageBase(Message.SendMPUserInfo);
-        pack.d(msg).to(app.sever);
-    }
+   
     //****** java调用js ******** */
     onFullVideoAdError(){
         cc.log('广告载入失败');
