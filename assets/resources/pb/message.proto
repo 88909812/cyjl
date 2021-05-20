@@ -36,4 +36,5 @@ message RpcPacket{
 message GuanKaIng{    
     uint32 main = 1;   //主干 管卡Id
     uint32 day = 2;   //每日一关 管卡Id
+    bool dayComplete = 3; //每日一关是否已经完成
 }

@@ -1,6 +1,6 @@
 {
   "ver": "2.3.5",
-  "uuid": "72688b4e-068b-4852-a746-b8fe6a92ba80",
+  "uuid": "5d71c59a-94dd-44eb-8d36-d199466b6986",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
@@ -11,10 +11,10 @@
   "height": 762,
   "platformSettings": {},
   "subMetas": {
-    "gamedi": {
+    "dailydi": {
       "ver": "1.0.4",
-      "uuid": "c1265186-f268-4792-b91f-8625a7e34bba",
-      "rawTextureUuid": "72688b4e-068b-4852-a746-b8fe6a92ba80",
+      "uuid": "b58097d1-3bd0-4c40-a458-ec31f723e798",
+      "rawTextureUuid": "5d71c59a-94dd-44eb-8d36-d199466b6986",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": false,

@@ -28,7 +28,8 @@ message GuanKaConfig {
 }
 //0x010001 发送题库
 message GuanKaInfoList {
-    repeated GuanKaConfig list = 1;
+    string tag = 1;
+    repeated GuanKaConfig list = 2;
 }
 
 //0x010002
@@ -50,6 +51,8 @@ message BackStartGuanKa {
     }
     repeated Cy cylist = 6;
     bool first = 7; //是否首次打开此管卡
+    string tag = 8; //回传
+    uint32 tili = 9; //次此打开消耗了多少体力
 }
 
 //0x010003  显示通关奖励领取

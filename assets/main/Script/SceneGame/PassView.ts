@@ -3,6 +3,7 @@ import { app } from '../app';
 import BaseView from '../base/BaseView';
 import { Message } from '../net/NetDefine';
 import { PackageBase } from '../net/PackageBase';
+import GameScene from './GameScene';
 const {ccclass, property} = cc._decorator;
 @ccclass
 export default class PassView extends BaseView {
@@ -13,6 +14,26 @@ export default class PassView extends BaseView {
     layer:cc.Node = null;
     @property(cc.Label)
     checkpoint:cc.Label = null;
+
+    @property(cc.Sprite)
+    bg:cc.Sprite = null;
+    @property(cc.SpriteFrame)
+    dayBg:cc.SpriteFrame = null;
+    @property(cc.SpriteFrame)
+    mainBg:cc.SpriteFrame = null;
+
+    @property(cc.Sprite)
+    frame:cc.Sprite = null;
+    @property(cc.SpriteFrame)
+    dayFrame:cc.SpriteFrame = null;
+    @property(cc.SpriteFrame)
+    mainFrame:cc.SpriteFrame = null;
+
+    @property(cc.Node)
+    checkpointBtn:cc.Node = null;
+    @property(cc.Node)
+    dailyGameBtn:cc.Node = null;
+
     curIdiom = '';
 
     data = null;
@@ -43,8 +64,25 @@ export default class PassView extends BaseView {
         this.clearAllNode();
         this.data = res;
         app.userData.lastGuanKa = this.data.guanka;
-        this.checkpoint.string = '第'+app.checkPointData.id+'关';
-        let cells = app.checkPointData.data.cy;
+
+        let cells;
+        if (cc.Canvas.instance.getComponent(GameScene).data.tag == 'day') {
+            cells = app.dailyGameData.data.cy;
+            this.dailyGameBtn.active = true;
+            this.checkpointBtn.active = false;
+            this.checkpoint.string = '每日一关';
+
+            this.bg.spriteFrame = this.dayBg;
+            this.frame.spriteFrame = this.dayFrame;
+        }else{
+            cells = app.checkPointData.data.cy;
+            this.dailyGameBtn.active = false;
+            this.checkpointBtn.active = true;
+            this.checkpoint.string = '第'+app.checkPointData.id+'关';
+
+            this.bg.spriteFrame = this.mainBg;
+            this.frame.spriteFrame = this.mainFrame;
+        }
         for (let index = 0; index < cells.length; index++) {
             const cell = cells[index];
             let itemNode = this.nodePool.get()||cc.instantiate(this.itemPfb);
@@ -54,7 +92,13 @@ export default class PassView extends BaseView {
         }
 
         this.scheduleOnce(()=>{
-            app.uiManager.showUI('PassRewardPanel',res.exp,identifier);
+            if (res.exp>0) {
+                app.uiManager.showUI('RewardPanel','exp',res.exp,identifier);
+            }else if (res.tili>0) {
+                app.uiManager.showUI('RewardPanel','tili',res.tili,identifier);
+            }else if (res.stone>0) {
+                app.uiManager.showUI('RewardPanel','stone',res.stone,identifier);
+            }
         },0.3);
     }
     clearAllNode(){

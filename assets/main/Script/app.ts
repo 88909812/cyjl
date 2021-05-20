@@ -22,6 +22,7 @@ export module app{
     export let oldRoleData:any = null;
     export let oldLevelData:any[] = [];
     export let checkPointData:any = {};
+    export let dailyGameData:any = {};
     export let userConfig:any = {};
     export let powerData:any = {};
 

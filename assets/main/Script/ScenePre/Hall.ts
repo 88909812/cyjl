@@ -63,8 +63,12 @@ export default class Hall extends BaseNode {
             });
             return;
         }
-
-        this.getComponentInChildren(HallUI).playStartAni(res);
+        if (res.tag == 'day') {
+            app.uiViewEvent.emit('StartDailyGame',res);
+        }else{
+            app.uiViewEvent.emit('StartCheckPoint',res);
+        }
+        
     }
 
     checkNoobGuide(){

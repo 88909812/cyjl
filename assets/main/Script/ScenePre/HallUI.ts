@@ -50,6 +50,9 @@ export default class HallUI extends BaseNode {
         this.onEventUI('RoleUpgradeFinish',()=>{
             this.checkUpLevel();
         });
+        this.onEventUI('StartCheckPoint',(res)=>{
+            this.playStartAni(res);
+        });
     }
     onDisable(){
         super.onDisable();
@@ -115,7 +118,7 @@ export default class HallUI extends BaseNode {
         cc.Tween.stopAllByTarget(this.power.node);
         
         cc.tween(this.power.node).blink(1,2).call(()=>{
-            this.power.string = (app.userData.data.tili-1)+'';
+            this.power.string = app.userData.data.tili+'';
             nodeTili.active = true;
             nodeTili.x = orignPos.x;
             nodeTili.y = orignPos.y-80;
@@ -144,5 +147,8 @@ export default class HallUI extends BaseNode {
         app.soundManager.playClick();
         app.uiManager.showUI('TiliPanel');
     }
-
+    onClickDailyGame(event:cc.Button){
+        app.soundManager.playClick();
+        app.uiManager.showUI('DailyTipPanel');
+    }
 }

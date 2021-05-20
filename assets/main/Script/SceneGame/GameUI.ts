@@ -20,6 +20,13 @@ export default class GameUI extends BaseNode {
     @property(HeadNode)
     avatar:HeadNode = null;
 
+    @property(cc.Sprite)
+    frame:cc.Sprite = null;
+    @property(cc.SpriteFrame)
+    dayFrame:cc.SpriteFrame = null;
+    @property(cc.SpriteFrame)
+    mainFrame:cc.SpriteFrame = null;
+
     checkpointIndex = 1;
     c_width = 9;
     c_height = 9;
@@ -40,9 +47,17 @@ export default class GameUI extends BaseNode {
         super.onDisable();
     }
     init(data){
-        app.checkPointData.data.list.sort((a, b) => { return a.pos - b.pos; });
-        this.getComponentInChildren(IdiomLayer).init(app.checkPointData.data.list,app.checkPointData.data.width,app.checkPointData.data.height);
-        this.getComponentInChildren(WordLayer).init(app.checkPointData.data.selection);
+        let gameInfo;
+        if (data.tag == 'day') {
+            gameInfo = app.dailyGameData;
+            this.frame.spriteFrame = this.dayFrame;
+        }else{
+            gameInfo = app.checkPointData;
+            this.frame.spriteFrame = this.mainFrame;
+        }
+        gameInfo.data.list.sort((a, b) => { return a.pos - b.pos; });
+        this.getComponentInChildren(IdiomLayer).init(gameInfo.data.list,gameInfo.data.width,gameInfo.data.height);
+        this.getComponentInChildren(WordLayer).init(gameInfo.data.selection);
 
         this.curtain.active = false;
         if (data.first) {
@@ -67,7 +82,12 @@ export default class GameUI extends BaseNode {
         this.freeTipNum.string = num+'';
     }
     refreshCheckPointInfo(){
-        this.checkpointLab.string = '第'+app.checkPointData.id+'关';
+        if (cc.Canvas.instance.getComponent(GameScene).data.tag == 'day') {
+            this.checkpointLab.string = '每日一关';
+        }else{
+            this.checkpointLab.string = '第'+app.checkPointData.id+'关';
+        }
+        
     }
     onClickTip(event:cc.Button){
         app.soundManager.playClick();

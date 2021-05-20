@@ -3,8 +3,9 @@ package message;
 
 //0x010001 获取关卡信息
 message RequestGuanKaInfo {
-     uint32 startId = 1;
-     uint32 num = 2;
+	 string tag = 1;  //何种关卡
+     uint32 startId = 2;
+     uint32 num = 3;
 }
 
 //0x010002 开始关卡

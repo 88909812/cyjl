@@ -23,8 +23,8 @@ export default class NetInit extends BaseNode {
         this.onEventUI('onResume',()=>{
             this.sendHeartBeat();
         },'uiBaseEvent');
-        this.onEventUI('reqGuanKaInfo',()=>{
-            this.reqGuanKaInfo();
+        this.onEventUI('reqGuanKaInfo',(tag)=>{
+            this.reqGuanKaInfo(tag);
         },'uiBaseEvent');
 
 
@@ -302,25 +302,39 @@ export default class NetInit extends BaseNode {
         app.levelData = res;
         app.uiViewEvent.emit('UpdateLevelInfo');
     }
-    reqGuanKaInfo(){
-        if (!app.checkPointData.id||app.checkPointData.id!=app.userData.lastGuanKa.main) {
+    reqGuanKaInfo(tag='main'){
+        if (tag == 'main') {
+            if (!app.checkPointData.id || app.checkPointData.id != app.userData.lastGuanKa[tag]) {
+                let RequestGuanKaInfo = new app.PB.message.RequestGuanKaInfo();
+                RequestGuanKaInfo.startId = app.userData.lastGuanKa[tag];
+                RequestGuanKaInfo.num = 1;
+                RequestGuanKaInfo.tag = tag;
+                let pack = new PackageBase(Message.RequestGuanKaInfo);
+                pack.d(RequestGuanKaInfo).to(app.sever);
+            }
+        } else {
             let RequestGuanKaInfo = new app.PB.message.RequestGuanKaInfo();
-            RequestGuanKaInfo.startId = app.userData.lastGuanKa.main;
+            RequestGuanKaInfo.startId = app.userData.lastGuanKa[tag];
             RequestGuanKaInfo.num = 1;
+            RequestGuanKaInfo.tag = tag;
             let pack = new PackageBase(Message.RequestGuanKaInfo);
             pack.d(RequestGuanKaInfo).to(app.sever);
         }
     }
     GuanKaInfoList(res){
-        console.log(res);
-        app.checkPointData = res.list[0];
-        if (app.checkPointData) {
-            cc.sys.localStorage.setItem('checkPointData', JSON.stringify(app.checkPointData));
+        console.log('GuanKaInfoList--',res);
+        if (res.tag == 'day') {
+            app.dailyGameData = res.list[0];
         }else{
-            cc.sys.localStorage.setItem('checkPointData', '');
+            app.checkPointData = res.list[0];
+            if (app.checkPointData) {
+                cc.sys.localStorage.setItem('checkPointData', JSON.stringify(app.checkPointData));
+            } else {
+                cc.sys.localStorage.setItem('checkPointData', '');
+            }
         }
         
-        app.uiViewEvent.emit('CheckPointInit');
+        app.uiViewEvent.emit('CheckPointInit',res.tag,app.userData.lastGuanKa[res.tag]);
     }
     UpdateLeftTiliSec(res){
         console.log(res);

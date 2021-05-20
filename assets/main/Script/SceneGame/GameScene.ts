@@ -6,7 +6,12 @@ import GameUI from './GameUI';
 const {ccclass, property} = cc._decorator;
 @ccclass
 export default class GameScene extends BaseNode {
-
+    @property(cc.Sprite)
+    bg:cc.Sprite = null;
+    @property(cc.SpriteFrame)
+    dayBg:cc.SpriteFrame = null;
+    @property(cc.SpriteFrame)
+    mainBg:cc.SpriteFrame = null;
     data = null;
     onLoad () {
         super.onLoad();
@@ -14,8 +19,8 @@ export default class GameScene extends BaseNode {
     }
     onEnable() {
         super.onEnable();
-        this.onEventUI('CheckPointInit',()=>{
-            this.init();
+        this.onEventUI('CheckPointInit',(tag,id)=>{
+            this.init(tag,id);
         });
         
         let listeners = ['BackStartGuanKa','BackGuanKaComplete','BackGetGuanKaAward','SendReachEnd'];
@@ -24,18 +29,21 @@ export default class GameScene extends BaseNode {
     onDisable(){
         super.onDisable();
     }
-    init(){
+    init(tag,id){
         let StartGuanKa = new app.PB.message.StartGuanKa();
-        StartGuanKa.tag = 'main';
-        StartGuanKa.id = app.checkPointData.id;
+        StartGuanKa.tag = tag;
+        StartGuanKa.id = id;
         let pack = new PackageBase(Message.StartGuanKa);
         pack.d(StartGuanKa).to(app.sever);
     }
     BackStartGuanKa(res){
-        console.log(res);
+        console.log('BackStartGuanKa--',res);
+        if (res.tag == 'day') {
+            this.bg.spriteFrame = this.dayBg;
+        }else{
+            this.bg.spriteFrame = this.mainBg;
+        }
         
-        this.getComponentInChildren(GameUI).refreshCheckPointInfo();
-
         if (res.code!=app.PB.message.BackStartGuanKa.RetCode.RC_OK) {
             let msg = '';
             switch (res.code) {
@@ -65,6 +73,8 @@ export default class GameScene extends BaseNode {
             return;
         }
         this.data = res;
+        this.getComponentInChildren(GameUI).refreshCheckPointInfo();
+
         this.getComponentInChildren(GameUI).setFreeTipNum(this.data.freeTipNum);
         this.getComponentInChildren(GameUI).init(this.data);
 

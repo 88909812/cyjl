@@ -160,6 +160,10 @@ export default class IdiomLayer extends BaseNode {
         
     }
     saveOperation() {
+        //每日一关不存储关卡数据
+        if (cc.Canvas.instance.getComponent(GameScene).data.tag == 'day') {
+            return;
+        }
         let children: IdiomCell[] = this.node.getComponentsInChildren(IdiomCell);
         for (let index = 0; index < children.length; index++) {
             const idiomCell = children[index];
