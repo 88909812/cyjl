@@ -22,7 +22,7 @@ export default class HallUI extends BaseNode {
     tiliIcon:cc.Node = null;
     @property(cc.Node)
     tiliGroove:cc.Node = null;
-
+    isAnimationPlayed = false;
     onLoad () {
         super.onLoad();
         this.getComponent(cc.Widget).top = app.statusBarHeight;
@@ -74,6 +74,7 @@ export default class HallUI extends BaseNode {
                 this.exp.initProgress(0,levelData.finalMaxExp);
             });
         }else{
+            this.level.string = app.levelData.currName;
             this.exp.progressTo(app.levelData.finalExp/app.levelData.finalMaxExp);
         }
     }
@@ -90,6 +91,9 @@ export default class HallUI extends BaseNode {
         }
     }
     onClickStartGame(event:cc.Button){
+        if (this.isAnimationPlayed) {
+            return;
+        }
         app.soundManager.playClick();
         if (!app.checkPointData) {
             app.uiManager.showUI('MessageNode','关卡信息获取失败！请重新登录！');
@@ -99,7 +103,7 @@ export default class HallUI extends BaseNode {
         StartGuanKa.tag = 'main';
         StartGuanKa.id = app.checkPointData.id;
         let pack = new PackageBase(Message.StartGuanKa);
-        pack.d(StartGuanKa).to(app.sever);        
+        pack.d(StartGuanKa).to(app.sever);     
     }
     playStartAni(data){
         if (!data.first) {
@@ -109,6 +113,8 @@ export default class HallUI extends BaseNode {
             });
             return;
         }
+        this.isAnimationPlayed = true;   
+
         let worldPos = this.tiliIcon.parent.convertToWorldSpaceAR(this.tiliIcon.position);
         let orignPos = this.tiliGroove.convertToNodeSpaceAR(worldPos);
         
@@ -123,6 +129,7 @@ export default class HallUI extends BaseNode {
             nodeTili.x = orignPos.x;
             nodeTili.y = orignPos.y-80;
             cc.tween(nodeTili).bezierTo(1,cc.v2(700, 0), cc.v2(100, -300), cc.v2(0,0)).call(()=>{
+                this.isAnimationPlayed = false;
                 cc.director.loadScene('GameScene',()=>{
                     console.log(cc.Canvas.instance);
                     cc.Canvas.instance.getComponent(GameScene).BackStartGuanKa(data);

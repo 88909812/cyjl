@@ -13,6 +13,8 @@ export default class PassView extends BaseView {
     @property(cc.Node)
     layer:cc.Node = null;
     @property(cc.Label)
+    tili:cc.Label = null;
+    @property(cc.Label)
     checkpoint:cc.Label = null;
 
     @property(cc.Sprite)
@@ -50,7 +52,9 @@ export default class PassView extends BaseView {
             let pack = new PackageBase(Message.GetCyExplain);
             pack.d(GetCyExplain).to(app.sever);
         });
-
+        this.onEventUI('UpdateUserInfo',()=>{
+            this.refreshInfo();
+        });
 
         let listeners = ['BackCyExplain'];
         this.register(listeners);
@@ -64,6 +68,7 @@ export default class PassView extends BaseView {
         this.clearAllNode();
         this.data = res;
         app.userData.lastGuanKa = this.data.guanka;
+        this.refreshInfo()
 
         let cells;
         if (cc.Canvas.instance.getComponent(GameScene).data.tag == 'day') {
@@ -98,8 +103,15 @@ export default class PassView extends BaseView {
                 app.uiManager.showUI('RewardPanel','tili',res.tili,identifier);
             }else if (res.stone>0) {
                 app.uiManager.showUI('RewardPanel','stone',res.stone,identifier);
+            }else if (res.doubleStone5) {
+                app.uiManager.showUI('RewardPanel','stone','灵石翻倍（5个新关卡内有效）',identifier);
             }
         },0.3);
+    }
+    refreshInfo(){
+        if (app.userData.data) {
+            this.tili.string = app.userData.data.tili;
+        }
     }
     clearAllNode(){
         let children:IdiomExplain[] = this.layer.getComponentsInChildren(IdiomExplain);

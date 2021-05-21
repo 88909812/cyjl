@@ -11,6 +11,7 @@ export default class DailyTipPanel extends BasePanel {
     tiliGroove:cc.Node = null;
     @property(cc.Node)
     btnStartNode:cc.Node = null;
+    isAnimationPlayed = false;
     onLoad () {
         super.onLoad();
     }
@@ -34,6 +35,7 @@ export default class DailyTipPanel extends BasePanel {
         super.onDisable();
     }
     show(){
+        this.isAnimationPlayed = false;
         let lab = this.btnStartNode.getComponentInChildren(cc.Label);
         if (app.userData.lastGuanKa.dayComplete) {
             lab.string = '今日已完成';
@@ -46,11 +48,15 @@ export default class DailyTipPanel extends BasePanel {
         }
     }
     onClickStartGame(event:cc.Button){
+        if (this.isAnimationPlayed) {
+            return;
+        }
         if (app.userData.lastGuanKa.dayComplete) {
             app.uiManager.showUI('MessageNode','恭喜少侠破解今日难关，恳请明日再来帮助老夫答疑解惑！');
             return;
         }
         app.uiBaseEvent.emit('reqGuanKaInfo','day');
+        this.isAnimationPlayed = true;
     }
     playStartAni(data){
         if (!data.first) {

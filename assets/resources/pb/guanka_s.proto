@@ -70,7 +70,8 @@ message BackGuanKaComplete {
     uint32 stone = 4;  // 完成此关获取的灵石奖励
     uint32 tili = 5;  // 完成此关获取的体力奖励
     uint32 exp = 6;  // 完成此关获取的修为奖励
-    GuanKaIng guanka = 7; // 更新关卡id
+    bool doubleStone5 = 7;  // 是否奖励未来五关灵石奖励翻倍
+    GuanKaIng guanka = 8; // 更新关卡id
 }
 
 //0x010004 通关奖励领取 (普通领取和视频领取) 领取成功后会立即发送0x000106协议
