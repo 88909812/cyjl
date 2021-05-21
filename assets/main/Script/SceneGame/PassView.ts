@@ -104,7 +104,7 @@ export default class PassView extends BaseView {
             }else if (res.stone>0) {
                 app.uiManager.showUI('RewardPanel','stone',res.stone,identifier);
             }else if (res.doubleStone5) {
-                app.uiManager.showUI('RewardPanel','stone','灵石翻倍（5个新关卡内有效）',identifier);
+                app.uiManager.showUI('RewardPanel','stone','灵石翻倍效果\n（5个新关卡内有效）',identifier);
             }
         },0.3);
     }
