@@ -4,6 +4,7 @@ import ProgressAni from '../components/ProgressAni';
 import { Message } from '../net/NetDefine';
 import { PackageBase } from '../net/PackageBase';
 import GameScene from '../SceneGame/GameScene';
+import { formatMinute } from '../tools/utils';
 import RoleUpgrade from './RoleUpgrade';
 const {ccclass, property} = cc._decorator;
 @ccclass
@@ -12,6 +13,9 @@ export default class HallUI extends BaseNode {
     power:cc.Label = null;
     @property(cc.Label)
     lingshi:cc.Label = null;
+
+    @property(cc.Label)
+    countDown:cc.Label = null;
 
     @property(cc.Label)
     level:cc.Label = null;
@@ -148,6 +152,7 @@ export default class HallUI extends BaseNode {
     
     onClickExchangeStone(event:cc.Button){
         app.soundManager.playClick();
+        //app.uiManager.showUI('MessageNode','暂不开放，敬请期待！');
         app.uiManager.showUI('StoneExchangePanel');
     }
     onClickAddPower(event:cc.Button){
@@ -157,5 +162,12 @@ export default class HallUI extends BaseNode {
     onClickDailyGame(event:cc.Button){
         app.soundManager.playClick();
         app.uiManager.showUI('DailyTipPanel');
+    }
+    update(dt){
+        let time = new Date().getTime()/1000;
+        let countDownNum = Math.abs(app.powerData.timeStamp.sub(time).toNumber())
+        if (countDownNum<=app.powerData.val) {
+            this.countDown.string = formatMinute(app.powerData.val-countDownNum);
+        }
     }
 }

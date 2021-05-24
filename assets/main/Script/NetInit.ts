@@ -255,7 +255,7 @@ export default class NetInit extends BaseNode {
                 Login.group = app.channelConfig.group;
                 let pack = new PackageBase(Message.Login);
                 pack.d(Login).to(app.sever);
-
+                console.log('loginData == ', Login);
                 app.loginData = Login;
             },
             fail: (res) => {
@@ -340,5 +340,6 @@ export default class NetInit extends BaseNode {
         console.log(res);
         app.powerData = res;
     }
+
     // update (dt) {}
 }

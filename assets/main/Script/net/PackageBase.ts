@@ -1,3 +1,4 @@
+import { SocketServer } from "./SocketServer";
 
 export class PackageBase {
     msgProto: any; 
@@ -15,7 +16,7 @@ export class PackageBase {
         return this;
     }
 
-    to(server: any, listenerCb?:any, errorCb?: any): void {
+    to(server: SocketServer, listenerCb?:any, errorCb?: any): void {
         if (server == null) {
             return;
         }
@@ -52,7 +53,7 @@ export class PackageBase {
         pack.set(cmdLenArr, packLen + keyLen);
         pack.set(new Uint8Array(protoArr), packLen + keyLen + cmdLen);
         server.Encode(pack);
-        return pack;
+        return pack.buffer;
     }
 
 

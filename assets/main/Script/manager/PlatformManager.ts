@@ -108,7 +108,8 @@ export default class PlatformManager {
 
     getStatusBarHeight():number{
         if (cc.sys.platform == cc.sys.WECHAT_GAME) {
-            return wx.getSystemInfoSync().statusBarHeight;
+            let sysInfo = wx.getSystemInfoSync();
+            return sysInfo.statusBarHeight * (app.DesignWidth/sysInfo.screenWidth);
         }else if (cc.sys.platform == cc.sys.ANDROID){
             return jsb.reflection.callStaticMethod(packageName+"AppActivity", "getStatusBarHeight","()I");
         }else if (cc.sys.platform === cc.sys.IPAD || cc.sys.platform === cc.sys.IPHONE) {

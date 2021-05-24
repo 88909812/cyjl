@@ -80,7 +80,7 @@ export default class DailyTipPanel extends BasePanel {
             powerLabel.string = app.userData.data.tili+'';
             nodeTili.active = true;
             nodeTili.x = orignPos.x;
-            nodeTili.y = orignPos.y-80;
+            nodeTili.y = orignPos.y;
             cc.tween(nodeTili).bezierTo(1,cc.v2(700, 0), cc.v2(100, -300), cc.v2(0,0)).call(()=>{
                 cc.director.loadScene('GameScene',()=>{
                     console.log(cc.Canvas.instance);
