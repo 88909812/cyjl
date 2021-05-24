@@ -33,6 +33,7 @@ export default class InvitePanel extends BasePanel {
     }
     onClickInvite(event:cc.Button){
         app.soundManager.playClick();
+        app.platform.share();
     }
 
 }

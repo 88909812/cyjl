@@ -29,8 +29,10 @@ export default class RankPanel extends BasePanel {
         super.onDisable();
     }
     show(){
-        this.rankList.clearAllItem();
-        this.reqNewData();
+        this.scheduleOnce(()=>{//延时，等动画播放完
+            this.rankList.clearAllItem();
+            this.reqNewData();
+        },0.2);
     }
 
     reqNewData(){

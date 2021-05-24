@@ -26,14 +26,14 @@ export default class PlatformManager {
             wx.onShareAppMessage(() => {
                 return {
                     title: '弘扬中华文化，开启头脑风暴，一起来玩成语大修仙！',
-                    imageUrl: '',
+                    imageUrl: 'https://cyjl.oss-cn-beijing.aliyuncs.com/share.jpg',
                     query: 'inviteId='+app.userData.data.userId
                 }
             });
             wx.onShareTimeline(() => {
                 return {
                     title: '转发标题',
-                    imageUrl: '', // 图片 URL
+                    imageUrl: 'https://cyjl.oss-cn-beijing.aliyuncs.com/share.jpg', // 图片 URL
                     query: 'inviteId='+app.userData.data.userId
                 }
             })
@@ -202,7 +202,7 @@ export default class PlatformManager {
         if (cc.sys.platform == cc.sys.WECHAT_GAME) {
             wx.shareAppMessage({
                 title: '弘扬中华文化，开启头脑风暴，一起来玩成语大修仙！',
-                imageUrl: '',
+                imageUrl: 'https://cyjl.oss-cn-beijing.aliyuncs.com/share.jpg',
                 query: 'inviteId=' + app.userData.data.userId
             });
         }
