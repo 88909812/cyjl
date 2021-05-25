@@ -601,7 +601,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 256.46000000000004,
+      "width": 334.46,
       "height": 58.4
     },
     "_anchorPoint": {
@@ -653,8 +653,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "每天免费获取5点体力",
-    "_N$string": "每天免费获取5点体力",
+    "_string": "倒计时结束免费获取1点体力",
+    "_N$string": "倒计时结束免费获取1点体力",
     "_fontSize": 26,
     "_lineHeight": 40,
     "_enableWrapText": true,

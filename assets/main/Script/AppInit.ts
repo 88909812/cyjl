@@ -3,10 +3,7 @@ import UIManager from './manager/UIManager';
 import SoundManager from './manager/SoundManager';
 import PlatformManager from './manager/PlatformManager';
 import { SocketServer } from "./net/SocketServer";
-import { PackageBase } from "./net/PackageBase";
-import { Message } from "./net/NetDefine";
 import { DomainGet } from "./net/DomainGet";
-import { HttpUrlGet,HttpGetIP } from './net/HttpRequest';
 import { app } from './app';
 const {ccclass, property} = cc._decorator;
 
@@ -62,11 +59,13 @@ export default class AppInit extends cc.Component {
         app.platform.setKeepScreenOn();
         app.statusBarHeight = app.platform.getStatusBarHeight();
 
-        if (cc.sys.isNative) {
-            HttpGetIP((ip) => {
-                app.clientIP = ip;
-            })
-        }
+        //*****微信小游戏不支持正则中包含?< 后续处理下*****
+        // if (cc.sys.isNative) {
+        //     HttpGetIP((ip) => {
+        //         app.clientIP = ip;
+        //     })
+        // }
+        //***************************************** */
         app.platform.gameInitComplete();
     }
     

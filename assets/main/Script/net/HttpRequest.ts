@@ -1,28 +1,28 @@
 import { app } from '../app';
 import * as md5 from '../libs/md5';
 const Chars = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
-export function HttpGetIP(cb) {
-    let url = "http://pv.sohu.com/cityjson?ie=utf-8";
-    let xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status < 400)) {
-            let response = xhr.responseText;
-            console.log('response===',response);
-            try {
-                let res = response.match(/(?<="cip": ")[0-9.]+/)[0];
-                cb(res);
-            }
-            catch (err) {
-                cc.error(err);
-                return;
-            }
-        }
-    };
-    xhr.timeout = 3000;
-    xhr.open("GET", url, true);
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.send();
-}
+// export function HttpGetIP(cb) {
+//     let url = "http://pv.sohu.com/cityjson?ie=utf-8";
+//     let xhr = new XMLHttpRequest();
+//     xhr.onreadystatechange = function () {
+//         if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status < 400)) {
+//             let response = xhr.responseText;
+//             console.log('response===',response);
+//             try {
+//                 let res = response.match(/(?<="cip": ")[0-9.]+/)[0];
+//                 cb(res);
+//             }
+//             catch (err) {
+//                 cc.error(err);
+//                 return;
+//             }
+//         }
+//     };
+//     xhr.timeout = 3000;
+//     xhr.open("GET", url, true);
+//     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+//     xhr.send();
+// }
 
 export function OpenAlipayUrl(userId) {
     let url = 'http://www.vsniumowang.com/alipay/openApp?state=';
