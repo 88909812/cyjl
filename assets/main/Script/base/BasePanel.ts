@@ -16,7 +16,7 @@ export default class BasePanel extends BaseNode {
             cc.error(this.node.name+'缺少节点：UINode');
             return;
         }
-        this.UINode.y = 50;
+        this.UINode.y = 10;
 
         let cutain = new cc.Node('Cutain');
         cutain.width = 750;

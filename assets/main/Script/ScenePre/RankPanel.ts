@@ -15,6 +15,7 @@ export default class RankPanel extends BasePanel {
         super.onLoad();
     }
     onClickCurtain(){
+        this.onClickClose();
         //cc.log('如果需要添加点击幕布时的操作，你可以选择重载onClickCurtain');
     }
     onEnable() {

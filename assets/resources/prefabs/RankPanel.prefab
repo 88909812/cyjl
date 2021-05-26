@@ -888,7 +888,7 @@
     "prefab": {
       "__uuid__": "335dd36e-ccfe-4039-913f-f79967d2df76"
     },
-    "spacingY": 0,
+    "spacingY": 10,
     "EventTag": "uiViewEvent",
     "maxReqCount": 10,
     "_id": ""

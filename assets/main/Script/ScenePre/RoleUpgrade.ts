@@ -5,74 +5,89 @@ import { PackageBase } from '../net/PackageBase';
 const {ccclass, property} = cc._decorator;
 @ccclass
 export default class RoleUpgrade extends BaseNode {
-    @property(cc.Node)
-    oldRole:cc.Node = null;
-    @property(cc.Node)
-    newRole:cc.Node = null;
+    @property(dragonBones.ArmatureDisplay)
+    role:dragonBones.ArmatureDisplay = null;
+    @property(dragonBones.ArmatureDisplay)
+    bornArmature:dragonBones.ArmatureDisplay = null;
 
     @property(cc.Node)
     light:cc.Node = null;
     onLoad () {
         super.onLoad();
+        this.bornArmature.on(dragonBones.EventObject.COMPLETE,()=>{
+            this.bornArmature.node.active = false;
+            this.role.node.active = true;
+            this.light.active = true;
+            cc.tween(this.light).by(2, { angle:360 }).call(()=>{
+                this.light.active = false;
+                app.uiViewEvent.emit('RoleUpgradeFinish');
+            }).start();
+        });
     }
     onEnable() {
         super.onEnable();
+
     }
     onDisable(){
         super.onDisable();
     }
     show(oldRoleData,newRoleData=null){
         this.light.active = false;
-        let armatureOld =  this.oldRole.getComponentInChildren(dragonBones.ArmatureDisplay);
-        cc.resources.load('bones/Step'+ (oldRoleData+1) + '_ske', dragonBones.DragonBonesAsset, (err, bone:dragonBones.DragonBonesAsset) => {
-            cc.resources.load('bones/Step' + (oldRoleData+1)  + '_tex', dragonBones.DragonBonesAtlasAsset, (err, asset:dragonBones.DragonBonesAtlasAsset) => {
-                armatureOld.dragonAsset = bone;
-                armatureOld.dragonAtlasAsset = asset;
-                armatureOld.armatureName = 'Armature';
-                armatureOld.playAnimation('newAnimation', 0);
-            });
-        });
 
-        if (newRoleData != null) {
-            let armatureNew = this.newRole.getComponentInChildren(dragonBones.ArmatureDisplay);
-            cc.resources.load('bones/Step' + (newRoleData+1)  + '_ske', dragonBones.DragonBonesAsset, (err, bone: dragonBones.DragonBonesAsset) => {
-                cc.resources.load('bones/Step' + (newRoleData+1) + '_tex', dragonBones.DragonBonesAtlasAsset, (err, asset: dragonBones.DragonBonesAtlasAsset) => {
-                    armatureNew.dragonAsset = bone;
-                    armatureNew.dragonAtlasAsset = asset;
-                    armatureNew.armatureName = 'Armature';
-                    armatureNew.playAnimation('newAnimation', 0);
+        if (newRoleData == null) {
+            cc.resources.load('bones/Step'+ (oldRoleData+1) + '_ske', dragonBones.DragonBonesAsset, (err, bone:dragonBones.DragonBonesAsset) => {
+                cc.resources.load('bones/Step' + (oldRoleData+1)  + '_tex', dragonBones.DragonBonesAtlasAsset, (err, asset:dragonBones.DragonBonesAtlasAsset) => {
+                    this.role.dragonAsset = bone;
+                    this.role.dragonAtlasAsset = asset;
+                    this.role.armatureName = 'Armature';
+                    this.role.playAnimation('newAnimation', 0);
                 });
             });
+        }else {
+            this.playBorn();
+            cc.resources.load('bones/Step' + (newRoleData+1)  + '_ske', dragonBones.DragonBonesAsset, (err, bone: dragonBones.DragonBonesAsset) => {
+                cc.resources.load('bones/Step' + (newRoleData+1) + '_tex', dragonBones.DragonBonesAtlasAsset, (err, asset: dragonBones.DragonBonesAtlasAsset) => {
+                    this.role.dragonAsset = bone;
+                    this.role.dragonAtlasAsset = asset;
+                    this.role.armatureName = 'Armature';
+                    this.role.playAnimation('newAnimation', 0);
+                });
+            });
+            
             app.oldRoleData++;
-            this.playAni();
+            //this.playAni();
         }
     }
-
-    playAni(){
-        const moveY = 700;
-        const moveTime = 3;
-        let oldRoleBone = this.oldRole.getChildByName('bone');
-        let newRoleBone = this.newRole.getChildByName('bone');
-        cc.Tween.stopAllByTarget(this.oldRole);
-        cc.Tween.stopAllByTarget(this.newRole);
-        cc.Tween.stopAllByTarget(oldRoleBone);
-        cc.Tween.stopAllByTarget(newRoleBone);
-        cc.Tween.stopAllByTarget(this.light);
-
-        this.oldRole.y = 0;
-        this.newRole.y = 0;
-        oldRoleBone.y = 0;
-        newRoleBone.y = 0;
-
-        cc.tween(this.oldRole).to(moveTime, { y: moveY }).start();
-        cc.tween(oldRoleBone).to(moveTime, { y: -moveY }).start();
-        cc.tween(this.newRole).to(moveTime, { y: moveY }).start();
-        cc.tween(newRoleBone).to(moveTime, { y: -moveY }).call(()=>{
-            this.light.active = true;
-            cc.tween(this.light).by(2, { angle:360 }).call(()=>{
-                this.light.active = false;
-                app.uiViewEvent.emit('RoleUpgradeFinish');
-            }).start();
-        }).start();
+    playBorn(){
+        this.role.node.active = false;
+        this.bornArmature.node.active = true;
+        this.bornArmature.playAnimation('newAnimation',2);
     }
+    // playAni(){
+    //     const moveY = 700;
+    //     const moveTime = 3;
+    //     let oldRoleBone = this.oldRole.getChildByName('bone');
+    //     let newRoleBone = this.newRole.getChildByName('bone');
+    //     cc.Tween.stopAllByTarget(this.oldRole);
+    //     cc.Tween.stopAllByTarget(this.newRole);
+    //     cc.Tween.stopAllByTarget(oldRoleBone);
+    //     cc.Tween.stopAllByTarget(newRoleBone);
+    //     cc.Tween.stopAllByTarget(this.light);
+
+    //     this.oldRole.y = 0;
+    //     this.newRole.y = 0;
+    //     oldRoleBone.y = 0;
+    //     newRoleBone.y = 0;
+
+    //     cc.tween(this.oldRole).to(moveTime, { y: moveY }).start();
+    //     cc.tween(oldRoleBone).to(moveTime, { y: -moveY }).start();
+    //     cc.tween(this.newRole).to(moveTime, { y: moveY }).start();
+    //     cc.tween(newRoleBone).to(moveTime, { y: -moveY }).call(()=>{
+    //         this.light.active = true;
+    //         cc.tween(this.light).by(2, { angle:360 }).call(()=>{
+    //             this.light.active = false;
+    //             app.uiViewEvent.emit('RoleUpgradeFinish');
+    //         }).start();
+    //     }).start();
+    // }
 }

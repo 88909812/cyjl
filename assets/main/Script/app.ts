@@ -33,7 +33,7 @@ export module app{
 
     export let versionCode = '1.0.0';
     export let ipConfig = {
-        wsIPs:['ws://192.168.0.38:31700/ws','ws://121.196.50.252:31700/ws'],
+        wsIPs:['ws://121.196.50.252:31700/ws','ws://192.168.0.38:31700/ws'],
         wssIPs: ['wss://cyjl.passball-tec.com:8443/ws/']
     };
     export let channelConfig = {
