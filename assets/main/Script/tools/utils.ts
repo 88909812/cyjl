@@ -35,7 +35,7 @@ export function formatJiaoToYuan(number: number) {//返回 xx.x元
     return result;
 }
 export function formatStoneToYuan(number: number) {//返回 xx.x元
-    let result = (number/500000).toFixed(2)+'元';
+    let result = (number/100000).toFixed(2)+'元';
     return result;
 }
 

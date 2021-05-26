@@ -4,7 +4,7 @@ import { Message } from "../Script/net/NetDefine";
 import { PackageBase } from "../Script/net/PackageBase";
 
 const {ccclass, property} = cc._decorator;
-const OriPx = 85;
+const OriPx = 86;
 @ccclass
 export default class HeadNode extends BaseNode {
     @property(cc.Sprite)
@@ -30,6 +30,9 @@ export default class HeadNode extends BaseNode {
         });
     }
     setDefaultFace(){
+        if (this.face.spriteFrame == this.defaultFace) {
+            return;
+        }
         this.face.spriteFrame = this.defaultFace;
         this.face.node.scale = 1;
     }

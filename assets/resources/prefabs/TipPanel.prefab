@@ -486,7 +486,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        -270,
+        -178.76,
         -31.5,
         0,
         0,
@@ -553,7 +553,7 @@
     "asset": {
       "__uuid__": "19a7e766-45fa-4b76-a148-71606c917898"
     },
-    "fileId": "f2sWGfkNND26OVb+BiPFoH",
+    "fileId": "83daL9ciBGg47oEDulMXcd",
     "sync": false
   },
   {
@@ -595,7 +595,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        -205.98000000000002,
+        -114.74,
         -31.5,
         0,
         0,
@@ -662,7 +662,7 @@
     "asset": {
       "__uuid__": "19a7e766-45fa-4b76-a148-71606c917898"
     },
-    "fileId": "bbrBcJhKFBOI+yrO8p87gj",
+    "fileId": "bfqa550ptJJbxDDQQv4eP1",
     "sync": false
   },
   {
@@ -676,7 +676,7 @@
     "_fontFamily": "Arial",
     "_isSystemFontUsed": true,
     "_N$string": "<color=#855627>Rich</c><color=#0fffff>Textqweqweqweqwe</color>",
-    "_N$horizontalAlign": 0,
+    "_N$horizontalAlign": 1,
     "_N$fontSize": 32,
     "_N$font": null,
     "_N$cacheMode": 0,

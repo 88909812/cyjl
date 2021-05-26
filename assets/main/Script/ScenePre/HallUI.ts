@@ -164,10 +164,13 @@ export default class HallUI extends BaseNode {
         app.uiManager.showUI('DailyTipPanel');
     }
     update(dt){
-        let time = new Date().getTime()/1000;
-        let countDownNum = Math.abs(app.powerData.timeStamp.sub(time).toNumber())
-        if (countDownNum<=app.powerData.val) {
-            this.countDown.string = formatMinute(app.powerData.val-countDownNum);
+        if (app.powerData.timeStamp) {
+            let time = new Date().getTime()/1000;
+            let countDownNum = Math.abs(app.powerData.timeStamp.sub(time).toNumber())
+            if (countDownNum<=app.powerData.val) {
+                this.countDown.string = formatMinute(app.powerData.val-countDownNum);
+            }
         }
+        
     }
 }
