@@ -153,7 +153,11 @@ export default class NetInit extends BaseNode {
             this.sendConnectData();
             this.reqGuanKaInfo();
             if (cc.director.getScene().name == 'LoadingScene') {
-                cc.director.loadScene('Hall');
+                if ((res.data.bitVal&1)==0) {
+                    app.uiManager.showUI('NewPlayerPanel');
+                }else{
+                    cc.director.loadScene('Hall');
+                }
             }          
         }else{
             let tipStr = '';

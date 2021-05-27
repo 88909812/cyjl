@@ -54,7 +54,7 @@ export default class RankPanel extends BasePanel {
             rank: res.myRank,
             lvlName: app.levelData.currName,
             name: app.userData.data.name,
-            guanKa: res.myRank,
+            guanKa: res.myGuanKa,
             avatar: app.userData.data.avatar
         };
         this.selfItem.init(data);

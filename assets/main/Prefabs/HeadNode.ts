@@ -15,11 +15,12 @@ export default class HeadNode extends BaseNode {
     btnAuthorize = null;
 
     init(avatarUrl){
-        this.setDefaultFace();
+
         if (!avatarUrl || avatarUrl == '') {
+            this.setDefaultFace();
             return;
         }
-
+        this.face.spriteFrame = null;
         cc.assetManager.loadRemote(avatarUrl,{ext: '.png'}, (err, texture:cc.Texture2D) => {
             if (err) {
                 console.log('err_face========', err);
@@ -30,9 +31,6 @@ export default class HeadNode extends BaseNode {
         });
     }
     setDefaultFace(){
-        if (this.face.spriteFrame == this.defaultFace) {
-            return;
-        }
         this.face.spriteFrame = this.defaultFace;
         this.face.node.scale = 1;
     }
