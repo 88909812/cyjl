@@ -170,19 +170,48 @@ export default class IdiomCell extends BaseNode {
     }
     judgeComplete():boolean{
         let isComplete = false;
-        let lineIdiomCells = this.getLineCells();
-        let columnIdiomCells = this.getColumnCells();
-        if (lineIdiomCells && lineIdiomCells.length > 1) {//成语最少要2个字
-            app.uiViewEvent.emit('IdiomComplete',lineIdiomCells);
-            isComplete = true;
+        let lineCells = this.getLineGirds();
+        let columnCells = this.getColumnGirds();
+
+        let lineExistCells:{existCells:IdiomCell[],nextCell:IdiomCell,curIndex:number} = null;
+        if (lineCells.length > 1) {
+            lineExistCells = this.getExistCells(lineCells);
+            if (lineExistCells.existCells.length == lineCells.length) {
+                app.uiViewEvent.emit('IdiomComplete', lineCells);
+                isComplete = true;
+            }
         }
-        if (columnIdiomCells && columnIdiomCells.length > 1) {//成语最少要2个字
-            app.uiViewEvent.emit('IdiomComplete',columnIdiomCells);
-            isComplete = true;
+
+        let columnExistCells:{existCells:IdiomCell[],nextCell:IdiomCell,curIndex:number} = null;
+        if (columnCells.length > 1) {
+            columnExistCells = this.getExistCells(columnCells);
+            if (columnExistCells.existCells.length == columnCells.length) {
+                app.uiViewEvent.emit('IdiomComplete', columnCells);
+                isComplete = true;
+            }
         }
+        if (lineExistCells && columnExistCells) {
+            if (lineExistCells.nextCell && columnExistCells.nextCell) {
+                if (lineExistCells.curIndex > columnExistCells.curIndex) {
+                    lineExistCells.nextCell.setSelect();
+                } else {
+                    columnExistCells.nextCell.setSelect();
+                }
+            } else if (lineExistCells.nextCell) {
+                lineExistCells.nextCell.setSelect();
+            } else if (columnExistCells.nextCell) {
+                columnExistCells.nextCell.setSelect();
+            }
+        }else if (lineExistCells&&lineExistCells.nextCell) {
+            lineExistCells.nextCell.setSelect();
+        }else if (columnExistCells&&columnExistCells.nextCell) {
+            columnExistCells.nextCell.setSelect();
+        }
+
+
         return isComplete;
     }
-    getLineCells():cc.Component[]{
+    getLineGirds():IdiomCell[]{
         let line = Math.floor(this.data.pos/this.girdWidth); 
         let column = this.data.pos%this.girdHeight;
         let IdiomCells = [this];
@@ -191,25 +220,19 @@ export default class IdiomCell extends BaseNode {
        
         let topCell = this.judgeExist(lineTop,column);
         while (topCell&&lineTop>=0) {//遍历到空格子为止
-            if (topCell.label.string == '') {
-                return [];//还没填字，未完成
-            }
             IdiomCells.unshift(topCell);
             lineTop--;
             topCell = this.judgeExist(lineTop, column);
         }
         let bottomCell = this.judgeExist(lineBottom, column);
         while (bottomCell&&lineBottom<this.girdHeight) {//遍历到空格子为止
-            if (bottomCell.label.string == '') {
-                return [];//还没填字，未完成
-            }
             IdiomCells.push(bottomCell);
             lineBottom++;
             bottomCell = this.judgeExist(lineBottom, column);
         }
         return IdiomCells;
     }
-    getColumnCells():cc.Component[]{
+    getColumnGirds():IdiomCell[]{
         let line = Math.floor(this.data.pos/this.girdWidth); 
         let column = this.data.pos%this.girdHeight;
         let IdiomCells = [this];
@@ -218,24 +241,39 @@ export default class IdiomCell extends BaseNode {
        
         let leftCell = this.judgeExist(line,columnLeft);
         while (leftCell&&columnLeft>=0) {
-            if (leftCell.label.string == '') {
-                return [];
-            }
             IdiomCells.unshift(leftCell);
             columnLeft--;
             leftCell = this.judgeExist(line, columnLeft);
         }
         let rightCell = this.judgeExist(line, columnRight);
         while (rightCell&&columnRight<this.girdWidth) {
-            if (rightCell.label.string == '') {
-                return [];
-            }
             IdiomCells.push(rightCell);
             columnRight++;
             rightCell = this.judgeExist(line, columnRight);
         }
         return IdiomCells;
     }
+    getExistCells(totalCells:IdiomCell[]):{existCells:IdiomCell[],nextCell:IdiomCell,curIndex:number}{
+        let cells = [];
+        let curIndex = 0;
+        let nextCell:IdiomCell = null;
+        for (let index = 0; index < totalCells.length; index++) {
+            let cell = totalCells[index];
+            if (cell.label.string != '') {
+                cells.push(cell)
+            } else {
+                nextCell = cell;
+                break;
+            }
+        }
+        for (let index = 0; index < totalCells.length; index++) {
+            if (totalCells[index]==this) {
+                curIndex = index;
+            }
+        }
+        return {existCells:cells,nextCell:nextCell,curIndex:curIndex};
+    }
+
     private judgeExist(line,column){
         let pos = this.girdHeight*line+column;
         let idiomCells = this.node.parent.getComponentsInChildren('IdiomCell');

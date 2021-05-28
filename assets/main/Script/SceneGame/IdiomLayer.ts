@@ -35,11 +35,7 @@ export default class IdiomLayer extends BaseNode {
                 app.uiViewEvent.emit('BackCell',data);
             }else{
                 //填入成功后检测这个字是否能完成成语
-                let isComplete = idiomCell.judgeComplete();
-                //没有完成成语的话，直接跳到下一个空格
-                if (!isComplete) {
-                    this.jumpToNextGrid();
-                }
+                idiomCell.judgeComplete();
             }
             this.saveOperation();
         });
@@ -102,6 +98,7 @@ export default class IdiomLayer extends BaseNode {
             }
         }
     }
+
     getSelectCell():IdiomCell{
         for (let index = 0; index < this.idiomCells.length; index++) {
             const idiomCell = this.idiomCells[index];

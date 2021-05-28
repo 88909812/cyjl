@@ -11,7 +11,7 @@ export default class PlatformManager {
     private static instance: PlatformManager;
     private debugModel = -1;
     public isLoadBanner = false;
-
+    private RewardedVideoAd = null;
     private constructor() {
         if (cc.sys.platform == cc.sys.WECHAT_GAME) {
             wx.onShow((res)=>{
@@ -43,6 +43,19 @@ export default class PlatformManager {
             if (launchOption.query.inviteId) {
                 app.inviteId = Number(launchOption.query.inviteId);
             }
+
+            this.RewardedVideoAd = wx.createRewardedVideoAd({adUnitId:''});
+            this.RewardedVideoAd.onLoad(()=>{
+                this.onRewardVideoAdCached();
+            });
+            this.RewardedVideoAd.onError(()=>{
+                this.onRewardVideoAdError();
+            });
+            this.RewardedVideoAd.onClose((res)=>{
+                if (res.isEnded) {//视频是否是在用户完整观看的情况下被关闭的
+                    this.onRewardVideoAdFinish();
+                }
+            });
         }
     }
     
@@ -310,7 +323,9 @@ export default class PlatformManager {
         if (CC_PREVIEW||cc.sys.isBrowser) {
             return;
         }
-        if (cc.sys.platform == cc.sys.ANDROID) {
+        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
+            this.RewardedVideoAd.load();
+        }else if (cc.sys.platform == cc.sys.ANDROID) {
             jsb.reflection.callStaticMethod(packageName+"AppActivity", "loadRewardVideoAd","()V");
         }else if (cc.sys.platform === cc.sys.IPAD || cc.sys.platform === cc.sys.IPHONE) {
             jsb.reflection.callStaticMethod("AppController","loadRewardVideoAd");
@@ -321,7 +336,9 @@ export default class PlatformManager {
             app.uiViewEvent.emit('onVideoAdFinish',AdType.RewardVideo);
             return;
         }
-        if (cc.sys.platform == cc.sys.ANDROID) {
+        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
+            this.RewardedVideoAd.show();
+        }else if (cc.sys.platform == cc.sys.ANDROID) {
             jsb.reflection.callStaticMethod(packageName+"AppActivity", "playRewardVideoAd","()V");
         }else if (cc.sys.platform === cc.sys.IPAD || cc.sys.platform === cc.sys.IPHONE) {
             jsb.reflection.callStaticMethod("AppController","playRewardVideoAd");
