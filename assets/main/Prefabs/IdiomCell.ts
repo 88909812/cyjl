@@ -173,7 +173,7 @@ export default class IdiomCell extends BaseNode {
         let lineCells = this.getLineGirds();
         let columnCells = this.getColumnGirds();
 
-        let lineExistCells:{existCells:IdiomCell[],nextCell:IdiomCell,curIndex:number} = null;
+        let lineExistCells:{existCells:IdiomCell[],nextCell:IdiomCell,emptyCount:number} = null;
         if (lineCells.length > 1) {
             lineExistCells = this.getExistCells(lineCells);
             if (lineExistCells.existCells.length == lineCells.length) {
@@ -182,7 +182,7 @@ export default class IdiomCell extends BaseNode {
             }
         }
 
-        let columnExistCells:{existCells:IdiomCell[],nextCell:IdiomCell,curIndex:number} = null;
+        let columnExistCells:{existCells:IdiomCell[],nextCell:IdiomCell,emptyCount:number} = null;
         if (columnCells.length > 1) {
             columnExistCells = this.getExistCells(columnCells);
             if (columnExistCells.existCells.length == columnCells.length) {
@@ -192,7 +192,7 @@ export default class IdiomCell extends BaseNode {
         }
         if (lineExistCells && columnExistCells) {
             if (lineExistCells.nextCell && columnExistCells.nextCell) {
-                if (lineExistCells.curIndex > columnExistCells.curIndex) {
+                if (lineExistCells.emptyCount <= columnExistCells.emptyCount) {
                     lineExistCells.nextCell.setSelect();
                 } else {
                     columnExistCells.nextCell.setSelect();
@@ -253,25 +253,22 @@ export default class IdiomCell extends BaseNode {
         }
         return IdiomCells;
     }
-    getExistCells(totalCells:IdiomCell[]):{existCells:IdiomCell[],nextCell:IdiomCell,curIndex:number}{
+    getExistCells(totalCells:IdiomCell[]):{existCells:IdiomCell[],nextCell:IdiomCell,emptyCount:number}{
         let cells = [];
-        let curIndex = 0;
+        let emptyCount = 0;
         let nextCell:IdiomCell = null;
         for (let index = 0; index < totalCells.length; index++) {
             let cell = totalCells[index];
             if (cell.label.string != '') {
                 cells.push(cell)
             } else {
-                nextCell = cell;
-                break;
+                if (!nextCell) {
+                    nextCell = cell;
+                }
+                emptyCount++;
             }
         }
-        for (let index = 0; index < totalCells.length; index++) {
-            if (totalCells[index]==this) {
-                curIndex = index;
-            }
-        }
-        return {existCells:cells,nextCell:nextCell,curIndex:curIndex};
+        return {existCells:cells,nextCell:nextCell,emptyCount:emptyCount};
     }
 
     private judgeExist(line,column){
